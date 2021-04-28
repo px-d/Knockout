@@ -1,16 +1,13 @@
 package de.soho5k.game
 
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.player.PlayerManager
 import de.soho5k.utils.Localization.ll
 import de.soho5k.utils.extensions.*
 import events.GameEndEvent
 import events.GameStartEvent
-import net.axay.kspigot.event.register
 import net.axay.kspigot.event.unregister
-import net.axay.kspigot.extensions.bukkit.feed
-import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.runnables.task
 import org.bukkit.Bukkit

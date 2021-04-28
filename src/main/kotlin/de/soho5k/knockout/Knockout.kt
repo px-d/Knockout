@@ -5,6 +5,8 @@ import com.onarandombox.MultiverseCore.MultiverseCore
 import de.soho5k.commands.*
 import de.soho5k.game.GameManager
 import de.soho5k.game.events.GeneralEvents
+import de.soho5k.knockout.managers.ConfigManager
+import de.soho5k.knockout.managers.RankingManager
 import de.soho5k.knockout.queue.GameInfoProvider
 import de.soho5k.knockout.queue.QueueChannel
 import de.soho5k.player.PlayerManager

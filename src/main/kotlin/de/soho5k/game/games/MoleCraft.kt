@@ -1,8 +1,7 @@
 package de.soho5k.game.games
 
-import de.soho5k.game.GameManager
 import de.soho5k.game.GameSchematic
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.mode
@@ -12,15 +11,9 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityDropItemEvent
-import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerDropItemEvent
-import util.ItemBuilder
 import java.lang.Exception
 import kotlin.random.Random
 

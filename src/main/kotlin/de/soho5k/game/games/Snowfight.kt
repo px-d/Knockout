@@ -1,35 +1,23 @@
 package de.soho5k.game.games
 
-import de.soho5k.game.GameManager
 import de.soho5k.game.GameSchematic
 import de.soho5k.game.events.CommonEvents
-import de.soho5k.knockout.ConfigManager
-import de.soho5k.knockout.ConfigManager.spawns
-import de.soho5k.knockout.Knockout
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.amountOf
-import de.soho5k.utils.extensions.killSound
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.snowFightEquip
-import de.soho5k.utils.spleefEquip
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
-import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.block.BlockPlaceEvent
-import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.inventory.CraftItemEvent
-import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.metadata.FixedMetadataValue
-import org.bukkit.metadata.MetadataValue
-import kotlin.random.Random
 
 class Snowfight : GameSchematic(
     "Snowfight",

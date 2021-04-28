@@ -1,8 +1,6 @@
 package de.soho5k.game.games
 
-import de.soho5k.game.GameManager
 import de.soho5k.game.GameSchematic
-import de.soho5k.knockout.ConfigManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
@@ -10,7 +8,6 @@ import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
 import de.soho5k.utils.extensions.fuseSound
 import de.soho5k.utils.extensions.mode
-import events.GameEndEvent
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.task
 import org.bukkit.Bukkit
@@ -20,8 +17,6 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.PlayerInteractEvent

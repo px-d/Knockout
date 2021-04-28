@@ -4,7 +4,7 @@ import de.hglabor.velocity.queue.constants.QChannels
 import de.hglabor.velocity.queue.jedis.JedisManager
 import de.soho5k.game.events.LobbyEvents
 import de.soho5k.game.games.*
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.player.KnockoutPlayer
 import de.soho5k.player.PlayerManager

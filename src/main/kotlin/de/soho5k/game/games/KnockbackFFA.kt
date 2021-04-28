@@ -2,7 +2,7 @@ package de.soho5k.game.games
 
 import de.soho5k.game.events.CommonEvents
 import de.soho5k.game.GameSchematic
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.killSound
 import de.soho5k.utils.knockbackFFAEquip

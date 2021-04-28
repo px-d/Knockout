@@ -3,7 +3,7 @@ package de.soho5k.utils.extensions
 import board.FastBoard
 import de.soho5k.game.GameManager
 import de.soho5k.game.games.AnvilRain
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.Localization.ll

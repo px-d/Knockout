@@ -6,7 +6,7 @@ import de.hglabor.velocity.queue.jedis.JedisManager
 import de.hglabor.velocity.queue.pojo.QGameInfo
 import de.hglabor.velocity.queue.pojo.QPlayerInfo
 import de.soho5k.game.GameManager
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import net.axay.kspigot.extensions.onlinePlayers

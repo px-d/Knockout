@@ -2,9 +2,9 @@ package de.soho5k.player
 
 import board.FastBoard
 import de.soho5k.game.GameManager
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
-import de.soho5k.knockout.RankingManager
+import de.soho5k.knockout.managers.RankingManager
 import de.soho5k.utils.Localization.ll
 import de.soho5k.utils.extensions.*
 import de.soho5k.utils.lobbyEquip

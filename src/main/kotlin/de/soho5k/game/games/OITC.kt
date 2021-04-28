@@ -1,12 +1,11 @@
 package de.soho5k.game.games
 
 import de.soho5k.game.GameSchematic
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.*
 import de.soho5k.utils.oitcEquip
-import events.GameStartEvent
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.runnables.task
@@ -16,19 +15,14 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.*
 import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scoreboard.Team
 import org.bukkit.util.Vector
-import javax.accessibility.AccessibleRole
 
 class OITC : GameSchematic(
     "OITC",

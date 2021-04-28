@@ -2,7 +2,7 @@ package de.soho5k.game.games
 
 import de.soho5k.game.GameManager
 import de.soho5k.game.GameSchematic
-import de.soho5k.knockout.ConfigManager
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.PointDistributor

@@ -1,5 +1,6 @@
-package de.soho5k.knockout
+package de.soho5k.knockout.managers
 
+import de.soho5k.knockout.Knockout
 import de.soho5k.utils.extensions.getOrSet
 import de.soho5k.utils.extensions.points
 import de.soho5k.utils.soholo.Holo

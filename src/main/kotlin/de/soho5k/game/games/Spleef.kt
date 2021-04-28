@@ -1,19 +1,14 @@
 package de.soho5k.game.games
 
-import de.soho5k.game.GameManager
 import de.soho5k.game.GameSchematic
-import de.soho5k.knockout.ConfigManager
-import de.soho5k.knockout.Knockout
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
-import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.amountOf
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.extensions.msg
 import de.soho5k.utils.spleefEquip
-import events.GameEndEvent
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.isFeetInWater
 import net.axay.kspigot.extensions.onlinePlayers
@@ -21,11 +16,8 @@ import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftItem
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -38,8 +30,6 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
 import kotlin.random.Random
 
 class Spleef :
