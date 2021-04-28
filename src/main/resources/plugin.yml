@@ -1,0 +1,31 @@
+name: Knockout
+main: de.soho5k.knockout.Knockout
+version: 1.0
+author: soho5k
+load: POSTWORLD
+api-version: 1.16
+depend:
+  - Multiverse-Core
+commands:
+  knockout:
+    description: Information
+    usage: /knockout
+  game:
+    description: Change Active Game-Pool
+    usage: /game [enable/disable/list] [GameID]
+    permission: knockout.game
+  start:
+    description: Start the Game (when it is in lobbby phase)
+    usage: /start
+    permission: knockout.start
+  staffmode:
+    description: Activate Staffmode
+    usage: /staffmode
+    permission: knockout.staffmode
+  skip:
+    description: Skip the current Game
+    usage: /skip
+    permission: knockout.skip
+  spawns:
+    description: abc
+    usage: efg
