@@ -16,19 +16,19 @@ class GameCommand : CommandExecutor {
                     sender.sendMessage("&7 ${i.name}".tc())
                 }
             }
-            if(args[0].equals("all",true)){
+            if (args[0].equals("all", true)) {
                 sender.sendMessage("&9Game-Pool:".tc())
-                for(i in GameManager.gamePool){
+                for (i in GameManager.gamePool) {
                     sender.sendMessage("&7 ${i.name}".tc())
                 }
             }
         }
         if (args.size == 2) {
             if (args[0].equals("enable", true)) {
-                GameManager.enableGame(sender, args[1])
+                GameManager.enableGame(args[1])
             }
             if (args[0].equals("disable", true)) {
-                GameManager.disableGame(sender, args[1])
+                GameManager.disableGame(args[1])
             }
         }
 

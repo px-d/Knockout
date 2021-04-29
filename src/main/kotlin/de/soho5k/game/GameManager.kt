@@ -64,7 +64,6 @@ object GameManager {
     /**
      *  Time Players have to wait in Lobby (will ich noch abhängig von Spielerzahl machen)
      */
-
     var lobbytime = ConfigManager.lobbytime
 
     /**
@@ -78,7 +77,6 @@ object GameManager {
         tick()
         println(ConfigManager.knockoutFont)
     }
-
 
     /**
      * Tick the Game
@@ -142,19 +140,13 @@ object GameManager {
         return game
     }
 
-    fun disableGame(source: CommandSender? = null, id: String) {
-        val game = gamePool.find { it.id == id }
-        if (game != null) {
-            gamePool.remove(game)
-
-            source?.sendMessage("&e$id ${net.md_5.bungee.api.ChatColor.of("7BFF42".toRgb())}wurde entfernt.".tc())
-        } else {
-            source?.sendMessage("&e$id ${net.md_5.bungee.api.ChatColor.of("FF9600".toRgb())}gibt es nicht.".tc())
-        }
-    }
-
-    fun enableGame(source: CommandSender? = null, id: String) {
-        if (gamePool.find { it.id == id } == null) {
+    /**
+     * Enable the game with given id
+     * @param id ID of the Game you want to enable
+     * @return If the Addition was successful or not
+     */
+    fun enableGame(id: String): Boolean {
+        if (!isGameEnabled(id)) {
             when (id) {
                 "anvilrain" -> {
                     gamePool.add(AnvilRain())
@@ -189,17 +181,38 @@ object GameManager {
                 "riptide" -> {
                     gamePool.add(Riptide())
                 }
+                else -> return false
             }
-            source?.sendMessage("&e$id ${net.md_5.bungee.api.ChatColor.of("7BFF42".toRgb())}wurde hinzugefügt.".tc())
-        } else {
-            source?.sendMessage("&e$id ${net.md_5.bungee.api.ChatColor.of("FF9600".toRgb())}ist schon aktiv.".tc())
+            return true
         }
+        return false
+    }
 
+    /**
+     * Disable the Game with given id
+     * @param id ID of the Game
+     * @return If the Deletion was successful or not
+     */
+    fun disableGame(id: String): Boolean {
+        if (isGameEnabled(id)) {
+            gamePool.remove(gamePool.find { it.id == id })
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Check if a game is enabled/not enabled
+     * @param id the ID you want to check
+     * @return  true if enabled
+     *          false if disabled
+     */
+    fun isGameEnabled(id: String): Boolean {
+        return gamePool.find { it.id == id } != null
     }
 
     /**
      * End the Game, Count Points and print them.
-     * TODO("Differentiate between 'Single Player Performance' and 'Team Performance'")
      */
     fun wrapUpGame() {
         if (ended) return
