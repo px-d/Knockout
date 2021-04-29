@@ -1,7 +1,9 @@
 package de.soho5k.utils.extensions
 
+import de.soho5k.utils.PREFIX
 import org.bukkit.ChatColor
 import java.awt.Color
+
 
 fun String.toScoreboard(
     totalPlayers: Int? = null,
@@ -15,13 +17,14 @@ fun String.toScoreboard(
 ): List<String> {
     var text = this
     if (totalPlayers != null) text = text.replace("{total_players}", "$totalPlayers")
-    if (alivePlayers != null) text = text.replace("{alive_players}", "$alivePlayers")
-    if (time != null) text = text.replace("{time}", time.toTime())
+    if (alivePlayers != null) text = text.replace("{alive_players}", "&a$alivePlayers&r".tc())
+    if (time != null) text = text.replace("{time}", "&a${time.toTime()}&r".tc())
     if (max_players != null) text = text.replace("{max_players}", "$max_players")
     if (min_players != null) text = text.replace("{min_players}", "$min_players")
-    if (points != null) text = text.replace("{points}", "$points")
+    if (points != null) text = text.replace("{points}", "&a$points&r".tc())
     if (anvilRate != null) text = text.replace("{anvilrate}", "$anvilRate")
-    if(queuePlayers != null) text = text.replace("{queue_players}", "$queuePlayers")
+    if (queuePlayers != null) text = text.replace("{queue_players}", "$queuePlayers")
+    text = text.replace("{prefix}", PREFIX)
     return text.split("{n}")
 }
 

@@ -5,7 +5,7 @@ import de.soho5k.game.GameManager
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.knockout.managers.RankingManager
-import de.soho5k.utils.Localization.ll
+import de.soho5k.utils.Localization.getLocalized
 import de.soho5k.utils.extensions.*
 import de.soho5k.utils.lobbyEquip
 import net.axay.kspigot.extensions.bukkit.feed
@@ -75,7 +75,7 @@ object PlayerManager {
     fun registerPlayer(player: Player) {
         players[player.uniqueId] = KnockoutPlayer(player.uniqueId)
         player.board = FastBoard(player)
-        player.updateBoardTitle(player.ll("SCOREBOARD.lobby.title"))
+        player.updateBoardTitle("&b&l${player.getLocalized("SCOREBOARD.lobby.title")}")
 
         task(delay = 5L, howOften = 1L) {
             player.teleport(ConfigManager.lobbyLoc)
@@ -92,20 +92,20 @@ object PlayerManager {
         RankingManager.updateRankings()
     }
 
-    fun registerQueuePlayer(uuid: UUID){
+    fun registerQueuePlayer(uuid: UUID) {
         players[uuid] = KnockoutPlayer(uuid)
         players[uuid]?.mode = PlayerMode.QUEUE
     }
 
-    fun unregisterQueuePlayer(uuid: UUID){
+    fun unregisterQueuePlayer(uuid: UUID) {
         players.remove(uuid)
     }
 
     fun unregisterPlayer(player: Player) {
         if (player.mode == PlayerMode.QUEUE) {
+            Knockout.team.removeEntry(player.name)
             player.deleteBoard()
             refreshAllBoards()
-            Knockout.team.removeEntry(player.name)
         } else {
             if (!GameManager.gameStarted) {
                 players.remove(player.uniqueId)
@@ -136,7 +136,7 @@ object PlayerManager {
 
     fun updateTablists() {
         for (i in players.values) {
-            i.player.setPlayerListName(" &b${i.points} &r${i.player.name}".tc())
+            i.player?.setPlayerListName(" &b${i.points} &r${i.player?.name}".tc())
         }
     }
 

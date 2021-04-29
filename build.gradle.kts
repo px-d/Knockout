@@ -25,8 +25,9 @@ dependencies {
     compileOnly("org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT")
     implementation("net.axay", "kspigot", "1.16.26")
     compileOnly("com.onarandombox.multiversecore:Multiverse-Core:4.2.2")
-    compileOnly("redis.clients:jedis:3.5.1")
-    compileOnly("de.hglabor:server-queue-core:0.0.2")
+    implementation("redis.clients:jedis:3.5.1")
+    implementation("de.hglabor:server-queue-core:0.0.2")
+
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = jvmVersionString

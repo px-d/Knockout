@@ -3,14 +3,16 @@ package de.soho5k.game
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.player.PlayerManager
-import de.soho5k.utils.Localization.ll
+import de.soho5k.utils.Localization.getLocalized
 import de.soho5k.utils.extensions.*
 import events.GameEndEvent
 import events.GameStartEvent
 import net.axay.kspigot.event.unregister
 import net.axay.kspigot.extensions.bukkit.title
+import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.HandlerList
@@ -37,7 +39,7 @@ abstract class GameSchematic(
     var stopped = false
 
     private val configFile = File("${Knockout.INSTANCE.dataFolder}/games/${identifier}.yml")
-    val config = YamlConfiguration.loadConfiguration(configFile)
+    private val config = YamlConfiguration.loadConfiguration(configFile)
 
     init {
         grace = config.setOrDefault("$identifier.grace", grace, configFile) as Int
@@ -61,18 +63,28 @@ abstract class GameSchematic(
         broadcastIntroToAll(id)
         teleportAllToGame(spawn)
 
-        if (grace > 0) messageAll("MESSAGES.game.grace", "SCOREBOARD.title.$id", grace.toTime())
+        if (grace > 0) {
+            onlinePlayers.forEach {
+                it.sendLocalizedMessage(
+                    "MESSAGES.game.grace",
+                    replacements = arrayOf(it.player!!.getLocalized("SCOREBOARD.title.$id"), grace.toTime())
+                )
+            }
+        }
+
         var graceperiod = grace
         preGrace()
         task(howOften = grace.toLong(), period = 20L) {
             if (stopped) it.cancel()
-            titleToAll(
-                "&e$name".tc(),
-                if (grace > 0) "&7..${graceperiod.toTime()}".tc() else "",
-                0,
-                21,
-                0
-            )
+            onlinePlayers.forEach { p ->
+                p.title(
+                    "&e${p.getLocalized("SCOREBOARD.title.$id")}".tc(),
+                    if (grace > 0) "&7..${graceperiod.toTime()}".tc() else "",
+                    0,
+                    21,
+                    0
+                )
+            }
             graceperiod--
         }
 
@@ -119,7 +131,10 @@ abstract class GameSchematic(
             } else {
                 if (time.shouldBroadcast(broadcast)) {
                     Bukkit.getOnlinePlayers().forEach { p ->
-                        p.msg("MESSAGES.minigame.ending", name, time.toTime())
+                        p.sendLocalizedMessage(
+                            "MESSAGES.minigame.ending",
+                            replacements = arrayOf(p.getLocalized("SCOREBOARD.title.$id"), time.toTime())
+                        )
                         p.ping()
                     }
                 }
@@ -169,8 +184,8 @@ abstract class GameSchematic(
         HandlerList.unregisterAll(GameManager.events)
         Bukkit.getOnlinePlayers().forEach {
             it.ping()
-            it.msg("MESSAGES.game.started")
-            it.title("", it.ll("TEXT_glhf").tc())
+            it.sendLocalizedMessage("MESSAGES.game.started")
+            it.title("", it.getLocalized("TEXT_glhf").tc())
         }
     }
 }

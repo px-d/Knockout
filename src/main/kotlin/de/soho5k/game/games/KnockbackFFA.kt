@@ -18,7 +18,14 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
 class KnockbackFFA :
-    GameSchematic("Knockback FFA", "kbffa", Location(Bukkit.getWorld("kbffa"), 0.0, 70.0, 0.0), 180, 10) {
+    GameSchematic(
+        "Knockback FFA",
+        "kbffa",
+        Location(Bukkit.getWorld("kbffa"), 0.0, 70.0, 0.0),
+        duration = 180,
+        grace = 10,
+        broadcast = 20
+    ) {
 
     private val spawns = ConfigManager.getSpawns("kbffa")
 

@@ -24,8 +24,9 @@ class KOTH : GameSchematic(
     "King of the Hill",
     "koth",
     Location(Bukkit.getWorld("koth"), 0.0, 70.0, 0.0),
-    60,
-    10
+    duration = 60,
+    grace = 10,
+    broadcast = 20
 ) {
 
 

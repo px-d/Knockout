@@ -18,7 +18,8 @@ class GenerateConfig : CommandExecutor {
         if (sender !is Player || !sender.isOp) return true
 
         val radius = if (args.size == 1) args[0].toInt() else 30
-
+        val path =
+            if (args.size == 2) "${Knockout.INSTANCE.dataFolder}/games/${args[1]}.yml" else "${Knockout.INSTANCE.dataFolder}/generated/generatedconfig.yml"
         val playerPos = sender.location
 
         val world = playerPos.world ?: throw Exception("World Not Existing")
@@ -42,7 +43,7 @@ class GenerateConfig : CommandExecutor {
         println("Total Spawns: ${spawns.size}")
 
 
-        val file = File("${Knockout.INSTANCE.dataFolder}/generated/generatedconfig.yml")
+        val file = File(path)
 
         val yaml =
             YamlConfiguration.loadConfiguration(file)

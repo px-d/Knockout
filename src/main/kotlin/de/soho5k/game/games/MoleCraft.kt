@@ -27,8 +27,7 @@ class MoleCraft :
         broadcast = 20
     ) {
 
-    val blocks = arrayListOf<Location>()
-
+    private val blocks = arrayListOf<Location>()
 
     override fun onStart() {
         addEvent(listen<EntityDamageEvent> { it.isCancelled = true })

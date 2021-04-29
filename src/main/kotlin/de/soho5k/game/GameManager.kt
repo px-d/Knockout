@@ -13,26 +13,27 @@ import net.axay.kspigot.runnables.firstSync
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.thenSync
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
 
 object GameManager {
 
     //List of all Minigames
     var gamePool: ArrayList<GameSchematic> = arrayListOf(
-//        AnvilRain(),
+        AnvilRain(),
 //        Firefly(),
 //        HotPotato(),
 //        KnockbackFFA(),
         KOTH(),
         Minefield(),
 //        MoleCraft(),
-//        OITC(),
+        OITC(),
 //        RainbowRun(),
 //        Riptide(),
 //        Spleef(),
-//        SurvivalGames(),
+        SurvivalGames(),
 //        TNTRun()
-//        Snowfight()
+        Snowfight()
     )
 
     /**
@@ -106,14 +107,17 @@ object GameManager {
                 } else {
                     if (lobbytime.shouldBroadcast(10)) {
                         for (i in PlayerManager.players.values) {
-                            i.player.msg("MESSAGES.game.starting", lobbytime.toTime())
-                            i.player.ping()
+                            i.player?.sendLocalizedMessage(
+                                "MESSAGES.game.starting",
+                                replacements = arrayOf(lobbytime.toTime())
+                            )
+                            i.player?.ping()
                         }
                     }
                     PlayerManager.refreshAllBoards()
                     lobbytime--
 
-                    if (lobbytime <= 5) {
+                    if (lobbytime <= 5 && Knockout.useQueue) {
                         JedisManager.publish(QChannels.QUEUE_MOVE.get(), Knockout.serverName)
                     }
                 }
@@ -204,20 +208,28 @@ object GameManager {
 
         task(delay = 60L) {
             val list = PlayerManager.players.values.sortedBy { it.points }.reversed()
-            val second = list.second() as KnockoutPlayer?
-            val third = list.third() as KnockoutPlayer?
-            var text = "[rgb:255,77,77] 1. &7${list.first().player.name} &8- &7${list.first().points} P."
 
-            if (second != null) {
-                text = "$text{n}[rgb:255,175,77] 2. &7${second.player.name} &8- &7${second.points} P."
+            val text =
+                arrayListOf("[rgb:255,77,77] 1. &7${list.first().player?.name} &8- &7${list.first().points} P.".tc())
+
+            if (list.second() != null) {
+                if (list.second() is KnockoutPlayer) {
+                    text.add("[rgb:255,111,66] 2. &7${(list.second() as KnockoutPlayer).player?.name} &8- &7${(list.second() as KnockoutPlayer).points} P.".tc())
+                }
             }
 
-            if (third != null) {
-                text = "$text{n}[rgb:255,237,77] 3. &7${third.player.name} &8- &7${third.points} P."
+            if (list.third() != null) {
+                if (list.third() is KnockoutPlayer) {
+                    text.add("[rgb:255,152,70] 3. &7${(list.third() as KnockoutPlayer).player?.name} &8- &7${(list.third() as KnockoutPlayer).points} P.".tc())
+                }
             }
 
             for (i in Bukkit.getOnlinePlayers()) {
-                i.msg("MESSAGES.gameover", text)
+                i.sendLocalizedMessage("MESSAGES.gameover_1", false, ChatColor.RED)
+                i.sendMessage("")
+                text.forEach { i.sendMessage(it) }
+                i.sendMessage("")
+                i.sendLocalizedMessage("MESSAGES.gameover_2", false, ChatColor.RED, replacements = arrayOf("60"))
                 i.refreshBoard()
             }
 

@@ -6,7 +6,7 @@ import de.soho5k.game.GameSchematic
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.*
-import de.soho5k.utils.Localization.ll
+import de.soho5k.utils.Localization.getLocalized
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.extensions.tc
 import de.soho5k.utils.extensions.timeBombSound
@@ -89,7 +89,7 @@ class HotPotato :
                 if (crash < 10) {
                     players.keys.filter { player -> player.isPotato }.forEach { player ->
                         player.timeBombSound()
-                        player.actionBar(player.ll("TEXT.explodesoon").tc())
+                        player.actionBar(player.getLocalized("TEXT.explodesoon").tc())
                     }
                 }
             }

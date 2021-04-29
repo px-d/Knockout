@@ -6,15 +6,14 @@ import de.soho5k.game.games.AnvilRain
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
-import de.soho5k.utils.Localization.ll
+import de.soho5k.utils.Localization.getLocalized
+import de.soho5k.utils.PREFIX
+import de.soho5k.utils.QUOTATION
 import net.axay.kspigot.extensions.bukkit.feed
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.runnables.task
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.Sound
+import org.bukkit.*
 import org.bukkit.entity.Player
 import java.util.*
 import kotlin.math.abs
@@ -50,37 +49,40 @@ fun Player.updateBoard(lines: List<String>) {
 }
 
 fun Player.refreshBoard() {
+    if (!boards.containsKey(uniqueId)) return
     if (GameManager.inLobby) {
         if (!GameManager.gameStarted) {
             updateBoard(
-                ll("SCOREBOARD.lobby.text")
+                getLocalized("SCOREBOARD.lobby.text")
                     .toScoreboard(
                         PlayerManager.totalPlayers,
                         PlayerManager.alivePlayers,
                         GameManager.lobbytime,
                         ConfigManager.maxPlayers,
                         ConfigManager.minPlayers,
+                        null,
+                        null,
                         PlayerManager.queuedPlayers
                     )
             )
         } else if (GameManager.ended) {
-            updateBoardTitle(ll("SCOREBOARD.lobby.ended.title"))
-            updateBoard(ll("SCOREBOARD.lobby.ended.text").toScoreboard(points = PlayerManager.players.values.find { it.player.uniqueId == uniqueId }?.points))
+            updateBoardTitle(getLocalized("SCOREBOARD.lobby.ended.title"))
+            updateBoard(getLocalized("SCOREBOARD.lobby.ended.text").toScoreboard(points = PlayerManager.players.values.find { it.player?.uniqueId == uniqueId }?.points))
         } else {
-            updateBoardTitle(ll("SCOREBOARD.lobby.title"))
-            updateBoard(ll("SCOREBOARD.lobby.waiting.text").toScoreboard(points = PlayerManager.players.values.find { it.player.uniqueId == uniqueId }?.points))
+            updateBoardTitle(getLocalized("SCOREBOARD.lobby.title"))
+            updateBoard(getLocalized("SCOREBOARD.lobby.waiting.text").toScoreboard(points = PlayerManager.players.values.find { it.player?.uniqueId == uniqueId }?.points))
         }
     } else {
         val id = GameManager.activeGame.id
-        updateBoardTitle(ll("SCOREBOARD.title.$id").tc())
+        updateBoardTitle("&b&l${getLocalized("SCOREBOARD.title.$id")}".tc())
         updateBoard(
-            ll("SCOREBOARD.text.$id").toScoreboard(
+            getLocalized("SCOREBOARD.text.$id").toScoreboard(
                 PlayerManager.totalPlayers,
                 PlayerManager.alivePlayers,
                 GameManager.activeGame.time,
                 ConfigManager.maxPlayers,
                 ConfigManager.minPlayers,
-                PlayerManager.players.values.find { it.player.uniqueId == uniqueId }?.points,
+                PlayerManager.players.values.find { it.player?.uniqueId == uniqueId }?.points,
                 if (GameManager.activeGame is AnvilRain) (GameManager.activeGame as AnvilRain).rate else 0
             )
         )
@@ -95,28 +97,18 @@ fun Player.deleteBoard() {
     boards.remove(uniqueId)?.delete()
 }
 
-fun Player.msg(
+fun Player.sendLocalizedMessage(
     key: String,
-    a: String? = null,
-    b: String? = null,
-    c: String? = null,
-    d: String? = null,
-    e: String? = null,
-    f: String? = null,
-    g: String? = null,
+    prefix: Boolean = true,
+    mainColor: ChatColor = ChatColor.GRAY,
+    accentColor: ChatColor = ChatColor.YELLOW,
+    vararg replacements: String
 ) {
-    var text = ll(key)
-    text = text.replace("{prefix}", ll("PREFIX"))
-    if (a != null) text = text.replace("{0}", a)
-    if (b != null) text = text.replace("{1}", b)
-    if (c != null) text = text.replace("{2}", c)
-    if (d != null) text = text.replace("{3}", d)
-    if (e != null) text = text.replace("{4}", e)
-    if (f != null) text = text.replace("{5}", f)
-    if (g != null) text = text.replace("{6}", g)
-    for (i in text.split("{n}")) {
-        sendMessage(i.tc())
-    }
+    val localized = getLocalized(key)
+    val inserts = arrayListOf<String>()
+    replacements.forEach { inserts.add("$accentColor$it$mainColor") }
+    val pref = if (prefix) "$PREFIX $QUOTATION " else ""
+    sendMessage("$pref$mainColor${localized.format(*inserts.toArray())}")
 }
 
 var Player.mode: PlayerMode
@@ -141,9 +133,9 @@ fun Player.addPoints(amount: Int, silent: Boolean = false) {
     if (points < 0) points = 0
     if (!silent) {
         if (amount > 0) {
-            msg("MESSAGES.coins.gained", "${abs(amount)}", "$points")
+            sendLocalizedMessage("MESSAGES.coins.gained", replacements = arrayOf("${abs(amount)}", "$points"))
         } else {
-            msg("MESSAGES.coins.lost", "${abs(amount)}", "$points")
+            sendLocalizedMessage("MESSAGES.coins.lost", replacements = arrayOf("${abs(amount)}", "$points"))
         }
     }
 }
@@ -195,8 +187,11 @@ fun Player.amountOf(mat: Material): Int {
 fun broadcastIntroToAll(id: String) {
     for (i in Bukkit.getOnlinePlayers()) {
         i.sendMessage("&7===========================================".tc())
-        for (x in i.ll("MESSAGES.intro.$id").split("{n}")) {
-            i.sendMessage(x.tc())
+        i.sendMessage("&7${i.getLocalized("TEXT.welcome_to")}: &b&l${i.getLocalized("SCOREBOARD.title.$id")}".tc())
+        i.sendMessage("&9${i.getLocalized("TEXT.how_does_it_work")}:".tc())
+        i.sendMessage("")
+        for (x in i.getLocalized("MESSAGES.intro.$id").split("{n}")) {
+            i.sendMessage("&7$x".tc())
         }
         i.sendMessage("&7===========================================".tc())
     }
@@ -213,31 +208,3 @@ fun teleportAllToGame(loc: Location) {
         }
     }
 }
-
-fun messageAll(key: String, key2: String, value: String) {
-    for (i in Bukkit.getOnlinePlayers()) {
-        i.msg(key, i.ll(key2), value)
-    }
-}
-
-fun messageAll(
-    key: String,
-    a: String? = null,
-    b: String? = null,
-    c: String? = null,
-    d: String? = null,
-    e: String? = null,
-    f: String? = null,
-) {
-    for (i in Bukkit.getOnlinePlayers()) {
-        i.msg(key, a, b, c, d, e, f)
-    }
-}
-
-fun titleToAll(title: String, subtitle: String = "", fadeIn: Int = 10, stay: Int = 70, fadeOut: Int = 10) {
-    for (i in Bukkit.getOnlinePlayers()) {
-        i.title(title, subtitle, fadeIn, stay, fadeOut)
-    }
-}
-
-//TODO("var Player.team: Team")

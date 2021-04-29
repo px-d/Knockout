@@ -10,6 +10,7 @@ import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import net.axay.kspigot.extensions.onlinePlayers
+import net.axay.kspigot.extensions.server
 import net.axay.kspigot.runnables.task
 import redis.clients.jedis.JedisPubSub
 import java.util.*
@@ -37,17 +38,14 @@ object GameInfoProvider {
     }
 }
 
-object QueueChannel : JedisPubSub() {
-
-    fun enable(){
-        println("Enabled Queue Channel")
-    }
+class QueueChannel(val serverName: String) : JedisPubSub() {
 
     override fun onMessage(channel: String, message: String) {
         val inLobby = GameManager.gameStarted
 
         if (channel == QChannels.QUEUE_JOIN.get()) {
-            if (inLobby) {
+            val qPlayerInfo = Gson().fromJson(message, QPlayerInfo::class.java)
+            if (qPlayerInfo.serverName == serverName && inLobby) {
                 val playerInfo = Gson().fromJson(message, QPlayerInfo::class.java)
                 PlayerManager.registerQueuePlayer(UUID.fromString(playerInfo.uuid))
             }

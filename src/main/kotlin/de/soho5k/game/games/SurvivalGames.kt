@@ -10,6 +10,7 @@ import de.soho5k.utils.RewardMode
 import de.soho5k.utils.SGLoot
 import de.soho5k.utils.extensions.*
 import net.axay.kspigot.event.listen
+import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.*
 import org.bukkit.entity.EntityType
@@ -20,9 +21,12 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.inventory.EquipmentSlot
 import util.ItemBuilder
+import javax.swing.text.rtf.RTFEditorKit
 import kotlin.math.floor
 import kotlin.math.round
 import kotlin.random.Random
@@ -46,15 +50,15 @@ class SurvivalGames :
 
     private val center = Location(
         spawn.world,
-        -94.5 + (Random.nextInt(100) - 50),
+        -2.5,
         100.0,
-        39.5 + (Random.nextInt(100) - 50)
+        1.5
     )
 
 
     override fun preGrace() {
         addEvent(listen<PlayerMoveEvent> {
-            if (isGrace) {
+            if (!running) {
                 val from: Location = it.from
                 val to: Location = it.to ?: return@listen
                 val x = floor(from.x)
@@ -79,16 +83,15 @@ class SurvivalGames :
             val border = spawn.world!!.worldBorder
             if (border.size >= 999.0) {
                 border.setSize(400.0, 40L)
-                for (i in Bukkit.getOnlinePlayers()) i.msg(
-                    "MESSAGES.sg.shrink",
-                    "400"
-                )
+                onlinePlayers.forEach { it.sendLocalizedMessage("MESSAGES.sg.shrink", replacements = arrayOf("400")) }
             } else {
                 border.setSize(border.size - 50.0, 50L)
-                for (i in Bukkit.getOnlinePlayers()) i.msg(
-                    "MESSAGES.sg.shrink",
-                    "${border.size - 50}"
-                )
+                onlinePlayers.forEach {
+                    it.sendLocalizedMessage(
+                        "MESSAGES.sg.shrink",
+                        replacements = arrayOf("${border.size - 50}")
+                    )
+                }
             }
 
         }
@@ -119,42 +122,43 @@ class SurvivalGames :
         })
         addEvent(listen<PlayerInteractEvent> {
             if (!GameManager.activeGame.running) {
-                if (it.clickedBlock?.type == Material.CHEST) {
-                    it.isCancelled = true
-                }
-                if (it.player.mode == PlayerMode.SPECTATE) {
-                    it.isCancelled = true
-                    if (it.item?.type == Material.COMPASS) {
-                        it.player.teleport(PlayerManager.players.values.filter { p -> p.mode == PlayerMode.PLAY }
-                            .random().player.location)
-                    }
-                }
+                if (it.clickedBlock?.type == Material.CHEST) it.isCancelled = true
+                return@listen
             }
 
-            if (it.player.inventory.itemInMainHand.type == Material.COMPASS && it.player.mode == PlayerMode.PLAY) {
+            if (it.player.mode == PlayerMode.SPECTATE) {
                 it.isCancelled = true
-                val players = Bukkit.getOnlinePlayers().filter { p ->
-                    p.mode == PlayerMode.PLAY && p.uniqueId != it.player.uniqueId
+                if (it.item?.type == Material.COMPASS) {
+                    it.player.teleport(onlinePlayers.filter { p -> p.mode == PlayerMode.PLAY }.random().location)
                 }
-                if (players.isEmpty()) {
-                    it.player.msg("MESSAGES.tracker.noplayers")
-                } else {
-                    var nearest = players.first()
-                    for (i in players) {
-                        if (i.uniqueId != it.player.uniqueId) {
-                            if (i.location.distance(it.player.location) < nearest.location.distance(it.player.location)) {
-                                nearest = it.player
-                            }
-                        }
-                    }
-                    it.player.compassTarget = nearest.location
-                    it.player.msg(
-                        "MESSAGES.tracker.nearby",
-                        nearest.name,
-                        "${round(it.player.location.distance(nearest.location) * 10) / 10}"
-                    )
-                }
+                return@listen
             }
+
+            if (it.player.mode == PlayerMode.PLAY && it.item?.type == Material.COMPASS && it.hand == EquipmentSlot.HAND) {
+                val clicker = it.player
+                val players = onlinePlayers.filter { p -> p != clicker && p.mode == PlayerMode.PLAY }
+                var nearest = players.first()
+
+                for (i in players) {
+                    if (i.location.distance(clicker.location) < nearest.location.distance(clicker.location)) {
+                        nearest = i
+                    }
+                }
+
+                clicker.compassTarget = nearest.location
+                clicker.sendLocalizedMessage(
+                    "MESSAGES.tracker.nearby",
+                    false,
+                    ChatColor.AQUA,
+                    ChatColor.YELLOW,
+                    replacements = arrayOf(
+                        nearest.name,
+                        "${round(clicker.location.distance(nearest.location) * 10) / 10}"
+                    )
+                )
+
+            }
+
         })
         addEvent(listen<BlockBreakEvent> {
             if (it.player.gameMode != GameMode.CREATIVE) {
@@ -176,10 +180,8 @@ class SurvivalGames :
                 if ((it.entity as Player).mode != PlayerMode.PLAY) it.isCancelled = true
             }
         })
-        addEvent(listen<EntityDropItemEvent> {
-            if (it.entity is Player) {
-                if ((it.entity as Player).mode != PlayerMode.PLAY) it.isCancelled = true
-            }
+        addEvent(listen<PlayerDropItemEvent> {
+            if (it.player.mode == PlayerMode.SPECTATE) it.isCancelled = true
         })
         addEvent(listen<EntityExplodeEvent> {
             if (it.entity is TNTPrimed) {
@@ -202,6 +204,7 @@ class SurvivalGames :
                     it.entity.world.dropItemNaturally(it.entity.location, i)
                 }
             }
+            it.entity.mode = PlayerMode.SPECTATE
             task(delay = 5L) { _ ->
                 it.entity.spigot().respawn()
                 task(delay = 5L) { _ ->
@@ -216,10 +219,18 @@ class SurvivalGames :
         val world = spawn.world ?: throw Exception("World Not Existing")
         world.worldBorder.center = center
 
-        messageAll("MESSAGES.sg.grace", 20.toTime())
-        task(delay = 20 * 30, howOften = 1L) {
+        onlinePlayers.forEach {
+            it.sendLocalizedMessage(
+                "MESSAGES.sg.grace",
+                mainColor = ChatColor.RED,
+                accentColor = ChatColor.YELLOW,
+                replacements = arrayOf(30.toTime())
+            )
+        }
+
+        task(delay = 20 * 30, howOften = 1L) { _ ->
             isGrace = false
-            messageAll("MESSAGES.sg.graceended")
+            onlinePlayers.forEach { it.sendLocalizedMessage("MESSAGES.sg.graceended", false, ChatColor.RED) }
         }
     }
 

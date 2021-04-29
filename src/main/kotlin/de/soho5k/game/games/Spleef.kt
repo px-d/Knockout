@@ -7,15 +7,12 @@ import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
 import de.soho5k.utils.extensions.amountOf
 import de.soho5k.utils.extensions.mode
-import de.soho5k.utils.extensions.msg
+import de.soho5k.utils.extensions.sendLocalizedMessage
 import de.soho5k.utils.spleefEquip
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.isFeetInWater
 import net.axay.kspigot.extensions.onlinePlayers
-import org.bukkit.Bukkit
-import org.bukkit.GameMode
-import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.entity.Snowball
 import org.bukkit.event.block.Action
@@ -65,7 +62,11 @@ class Spleef :
                 }
                 if (it.player.inventory.itemInMainHand.type == Material.SNOWBALL) {
                     it.isCancelled = true
-                    it.player.msg("MESSAGE.spleef.useshovel")
+                    it.player.sendLocalizedMessage(
+                        "MESSAGE.spleef.useshovel",
+                        prefix = false,
+                        mainColor = ChatColor.RED
+                    )
                 }
             }
         })

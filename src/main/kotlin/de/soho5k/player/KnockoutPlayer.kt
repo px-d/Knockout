@@ -11,7 +11,8 @@ class KnockoutPlayer(
     var mode: PlayerMode = PlayerMode.PLAY
 ) {
 
-    val player: Player
-        get() = Bukkit.getPlayer(uuid) ?: throw Exception ("Player Not Online")
+    val player: Player?
+        get() = Bukkit.getPlayer(uuid)
+
 
 }

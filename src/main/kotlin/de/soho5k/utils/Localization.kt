@@ -20,7 +20,7 @@ object Localization {
         }
     }
 
-    fun Player.ll(key: String): String {
+    fun Player.getLocalized(key: String): String {
         return if (locale.contains("de", true)) {
             getOrLoadBundle(Locale("de_de")).getString(key) ?: throw Exception("No Such Key / Resource Bundle")
         } else {

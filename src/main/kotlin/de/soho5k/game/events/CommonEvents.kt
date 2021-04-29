@@ -11,6 +11,8 @@ import org.bukkit.event.entity.EntityDropItemEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerPickupArrowEvent
+import org.bukkit.event.player.PlayerPickupItemEvent
 
 class CommonEvents(
     private val cancelFoodChange: Boolean = true,
@@ -21,12 +23,13 @@ class CommonEvents(
 ) : Listener {
     fun allEvents(): List<Listener> {
         return listOf(
-            listen<FoodLevelChangeEvent> { it.isCancelled = cancelFoodChange },
-            listen<BlockBreakEvent> { it.isCancelled = cancelBlockBreak },
-            listen<BlockPlaceEvent> { it.isCancelled = cancelBlockPlace },
-            listen<PlayerDropItemEvent> { it.isCancelled = cancelItemDrop },
-            listen<EntityDropItemEvent> { it.isCancelled = cancelItemDrop },
-            listen<EntityPickupItemEvent> { it.isCancelled = cancelItemPickup }
+            listen<FoodLevelChangeEvent> { if (cancelFoodChange) it.isCancelled = true },
+            listen<BlockBreakEvent> { if (cancelBlockBreak) it.isCancelled = true },
+            listen<BlockPlaceEvent> { if (cancelBlockPlace) it.isCancelled = true },
+            listen<PlayerDropItemEvent> { if (cancelItemDrop) it.isCancelled = true },
+            listen<EntityDropItemEvent> { if (cancelItemDrop) it.isCancelled = true },
+            listen<PlayerPickupItemEvent>{},
+            listen<EntityPickupItemEvent> { if (cancelItemPickup) it.isCancelled = true }
         )
     }
 }

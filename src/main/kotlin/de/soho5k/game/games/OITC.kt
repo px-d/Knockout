@@ -4,6 +4,7 @@ import de.soho5k.game.GameSchematic
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.player.PlayerMode
+import de.soho5k.utils.clearInv
 import de.soho5k.utils.extensions.*
 import de.soho5k.utils.oitcEquip
 import net.axay.kspigot.event.listen
@@ -35,8 +36,14 @@ class OITC : GameSchematic(
     private val spawns = ConfigManager.getSpawns("oitc")
 
     override fun onStart() {
-        addEvent(listen<PlayerDropItemEvent> { it.isCancelled = it.player.gameMode != GameMode.CREATIVE })
-        addEvent(listen<BlockBreakEvent> { it.isCancelled = it.player.gameMode != GameMode.CREATIVE })
+        addEvent(listen<PlayerDropItemEvent> {
+            it.isCancelled = true
+        })
+        addEvent(listen<BlockBreakEvent> {
+            if (it.player.gameMode != GameMode.CREATIVE) {
+                it.isCancelled = true
+            }
+        })
         addEvent(listen<EntityShootBowEvent> {
             if (it.entity is Player) {
                 if (it.projectile is Arrow) {
@@ -47,6 +54,7 @@ class OITC : GameSchematic(
         addEvent(listen<ProjectileHitEvent> {
             if (it.entity is Arrow) {
                 if (it.entity.shooter is Player && it.hitEntity is Player) {
+                    (it.hitEntity as Player).inventory.clear()
                     (it.hitEntity as Player).damage(200.0, it.entity.shooter as Player)
                 }
                 it.entity.remove()
@@ -62,6 +70,7 @@ class OITC : GameSchematic(
         })
 
         addEvent(listen<PlayerDeathEvent> {
+            it.entity.clearInv()
             it.keepInventory = true
             it.deathMessage = ""
             if (it.entity.killer != null) {
@@ -93,7 +102,7 @@ class OITC : GameSchematic(
             if (killed.uniqueId == from.uniqueId) {
                 from.addPoints(-3)
             } else {
-                killed.msg("MESSAGE.oitc.killed", from.name)
+                killed.sendLocalizedMessage("MESSAGE.oitc.killed", replacements = arrayOf(from.name))
             }
             respawnPlayer(killed)
         }
@@ -101,6 +110,7 @@ class OITC : GameSchematic(
 
     private fun respawnPlayer(player: Player) {
         player.velocity = Vector(0, 0, 0)
+        player.clearInv()
         player.spigot().respawn()
         player.teleport(spawns.random().clone().add(0.0, 0.4, 0.0))
         player.heal()

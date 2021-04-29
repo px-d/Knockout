@@ -2,6 +2,8 @@ package de.soho5k.knockout
 
 import de.soho5k.utils.soholo.HoloManager
 import com.onarandombox.MultiverseCore.MultiverseCore
+import de.hglabor.velocity.queue.constants.QChannels
+import de.hglabor.velocity.queue.jedis.JedisManager
 import de.soho5k.commands.*
 import de.soho5k.game.GameManager
 import de.soho5k.game.events.GeneralEvents
@@ -20,6 +22,7 @@ import org.bukkit.Bukkit
 import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 
+
 class Knockout : KSpigot() {
 
     companion object {
@@ -29,6 +32,7 @@ class Knockout : KSpigot() {
         lateinit var team: Team
         lateinit var holoManager: HoloManager
         lateinit var serverName: String
+        var useQueue: Boolean = false
     }
 
     override fun load() {
@@ -42,13 +46,17 @@ class Knockout : KSpigot() {
         holoManager = HoloManager(this)
         holoManager.start()
 
-        serverName = config.getOrSet("servername","knockout") as String
+        serverName = config.getOrSet("jedis.servername", "knockout") as String
+        useQueue = config.getOrSet("jedis.useQueue", false) as Boolean
 
         ConfigManager.enable()
         PlayerManager.enable()
         GameManager.enable()
-        QueueChannel.enable()
-        GameInfoProvider.enable(serverName)
+
+        /**
+         * Server Queue
+         */
+        if (useQueue) initJedis()
 
         GeneralEvents.enable()
 
@@ -78,5 +86,16 @@ class Knockout : KSpigot() {
         holoManager.end()
     }
 
+
+    private fun initJedis() {
+        val SERVER_PING = config.getOrSet("jedis.server_ping", false) as Boolean
+        val JEDIS_PASSWORD = config.getOrSet("jedis.password", "") as String
+
+        if (SERVER_PING) {
+            JedisManager.init(JEDIS_PASSWORD)
+            JedisManager.subscribe(QueueChannel(serverName), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get())
+        }
+        GameInfoProvider.enable(serverName)
+    }
 
 }

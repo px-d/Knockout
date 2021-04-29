@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender
 
 class GameCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
-
+        return true
         if (args.size == 1) {
             if (args[0].equals("list", true)) {
                 sender.sendMessage("&9Aktive Spiele:".tc())
