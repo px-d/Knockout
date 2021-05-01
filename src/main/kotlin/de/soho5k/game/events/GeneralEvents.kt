@@ -46,7 +46,7 @@ object GeneralEvents : Listener {
         }
         listen<GameEndEvent> {
             PlayerManager.refreshAllBoards()
-            if (GameManager.activeGames.size > 0) {
+            if (GameManager.activeGames.isNotEmpty()) {
                 onlinePlayers.forEach {
                     it.sendLocalizedMessage(
                         "MESSAGES.game.next",
