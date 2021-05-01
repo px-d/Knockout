@@ -31,22 +31,30 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
 
     page(1) {
         placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
-        button(Slots.RowSixSlotOne, createMaxGamesChooser()) {
-            it.bukkitEvent.isCancelled = true
-            var maxGames = GameManager.maxGames
-            val click = it.bukkitEvent.click
-            if (click == ClickType.RIGHT) {
-                maxGames -= 1
-            }
-            if (click == ClickType.LEFT) {
-                if (GameManager.gamePool.size > maxGames) {
-                    maxGames += 1
+        createRectCompound<ItemStack>(
+            Slots.RowSixSlotOne,
+            Slots.RowSixSlotOne,
+            iconGenerator = {
+                createMaxGamesChooser()
+            },
+            onClick = { clickEvent, element ->
+                clickEvent.bukkitEvent.isCancelled = true
+                var maxGames = GameManager.maxGames
+                val click = clickEvent.bukkitEvent.click
+                if (click == ClickType.RIGHT) {
+                    maxGames -= 1
                 }
+                if (click == ClickType.LEFT) {
+                    if (GameManager.gamePool.size > maxGames) {
+                        maxGames += 1
+                    }
+                }
+                if (maxGames < 1 || maxGames > gameCount) return@createRectCompound
+                GameManager.maxGames = maxGames
+                clickEvent.bukkitEvent.currentItem = createMaxGamesChooser()
             }
-            if (maxGames < 1 || maxGames > gameCount) return@button
-            GameManager.maxGames = maxGames
-            it.bukkitEvent.currentItem = createMaxGamesChooser()
-        }
+        ).addContent(createMaxGamesChooser())
+
         val gamesCompound = createRectCompound<Games>(
             Slots.RowTwoSlotTwo,
             Slots.RowFiveSlotEight,
@@ -92,20 +100,20 @@ fun createMaxGamesChooser(): ItemStack {
         meta {
             setDisplayName("${ChatColor.GOLD}Choose Max-Games")
             setLore {
-                + " "
-                + "${ChatColor.GRAY}Selected Games: ${ChatColor.GREEN}${GameManager.gamePool.size}"
-                + "§8Total Games in the Game-Pool"
-                + " "
-                + "${ChatColor.GRAY}Max games: ${ChatColor.GREEN}${GameManager.maxGames}"
-                + "§8Amount of games to be played"
-                + " "
-                + "${ChatColor.AQUA}Rechtsklick ${ChatColor.GRAY}runter"
-                + "${ChatColor.YELLOW}Linksklick ${ChatColor.GRAY}hoch"
-                + " "
-                + "${ChatColor.DARK_RED}${ChatColor.BOLD}IMPORTANT:${ChatColor.GRAY}"
-                + " §7The number of§a max games"
-                + " §7must§c not§7 be higher than the"
-                + " §7number of§a selected games§7."
+                +" "
+                +"${ChatColor.GRAY}Selected Games: ${ChatColor.GREEN}${GameManager.gamePool.size}"
+                +"§8Total Games in the Game-Pool"
+                +" "
+                +"${ChatColor.GRAY}Max games: ${ChatColor.GREEN}${GameManager.maxGames}"
+                +"§8Amount of games to be played"
+                +" "
+                +"${ChatColor.AQUA}Rightclick ${ChatColor.GRAY}lower"
+                +"${ChatColor.YELLOW}Leftclick ${ChatColor.GRAY}higher"
+                +" "
+                +"${ChatColor.DARK_RED}${ChatColor.BOLD}IMPORTANT:${ChatColor.GRAY}"
+                +" §7The number of§a max games"
+                +" §7must§c not§7 be higher than the"
+                +" §7number of§a selected games§7."
             }
         }
     }
