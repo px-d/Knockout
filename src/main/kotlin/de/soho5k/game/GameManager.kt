@@ -24,20 +24,20 @@ object GameManager {
 
     //List of all Minigames
     var gamePool: ArrayList<GameSchematic> = arrayListOf(
-        AnvilRain(),
-        Firefly(),
-        HotPotato(),
-        KnockbackFFA(),
-        KOTH(),
-        Minefield(),
-        MoleCraft(),
-        OITC(),
-        RainbowRun(),
-        Riptide(),
-        Spleef(),
-        SurvivalGames(),
-        TNTRun(),
-        Snowfight()
+//        AnvilRain(),
+//        Firefly(),
+//        HotPotato(),
+//        KnockbackFFA(),
+//        KOTH(),
+//        Minefield(),
+//        MoleCraft(),
+//        OITC(),
+//        RainbowRun(),
+//        Riptide(),
+//        Spleef(),
+//        SurvivalGames(),
+//        TNTRun(),
+//        Snowfight()
     )
 
     /**
@@ -73,7 +73,7 @@ object GameManager {
     /**
      *  The max value of games
      */
-    var maxGames = 10
+    var maxGames = if (gamePool.size < 10) gamePool.size else 10
 
     /**
      *  Iconlist for settingsgui

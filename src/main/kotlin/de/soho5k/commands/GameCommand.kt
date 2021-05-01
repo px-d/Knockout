@@ -26,29 +26,28 @@ data class Games(val name: String, val identifier: String, val icon: ItemStack)
 var gameCount = 0
 
 val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
-    title = "Choose games"
+
+    title = "Choose Games"
 
     page(1) {
         placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
-        val maxGamesCompound = createRectCompound<ItemStack>(
-
-            Slots.RowSixSlotOne,
-            Slots.RowSixSlotOne,
-
-            iconGenerator = {
-                createMaxGamesChooser()
-            }, onClick = { it, _ ->
-                it.bukkitEvent.isCancelled = true
-                var maxGames = GameManager.maxGames
-                val click = it.bukkitEvent.click
-                if (click == ClickType.RIGHT) maxGames -= 1
-                if (click == ClickType.LEFT) maxGames += 1
-                if (maxGames < 1 || maxGames > gameCount) return@createRectCompound
-                GameManager.maxGames = maxGames
-                it.bukkitEvent.currentItem = createMaxGamesChooser()
-            })
+        button(Slots.RowSixSlotOne, createMaxGamesChooser()) {
+            it.bukkitEvent.isCancelled = true
+            var maxGames = GameManager.maxGames
+            val click = it.bukkitEvent.click
+            if (click == ClickType.RIGHT) {
+                maxGames -= 1
+            }
+            if (click == ClickType.LEFT) {
+                if (GameManager.gamePool.size > maxGames) {
+                    maxGames += 1
+                }
+            }
+            if (maxGames < 1 || maxGames > gameCount) return@button
+            GameManager.maxGames = maxGames
+            it.bukkitEvent.currentItem = createMaxGamesChooser()
+        }
         val gamesCompound = createRectCompound<Games>(
-
             Slots.RowTwoSlotTwo,
             Slots.RowFiveSlotEight,
 
@@ -64,6 +63,7 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
                     GameManager.disableGame(element.identifier)
                 } else GameManager.enableGame(element.identifier)
                 updateIcon(clickedIcon, element.identifier)
+                clickEvent.guiInstance[Slots.RowSixSlotOne] = createMaxGamesChooser()
             }
         )
         firstAsync {
@@ -74,7 +74,6 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
         }.thenSync {
             gamesCompound.addContent(it)
         }.execute()
-        maxGamesCompound.addContent(createMaxGamesChooser())
     }
 }
 
@@ -82,7 +81,6 @@ fun updateIcon(icon: ItemStack, identifier: String): ItemStack {
     val meta = icon.itemMeta
     meta?.setLore {
         +" "
-        +"${ChatColor.GRAY}This game is"
         if (GameManager.isGameEnabled(identifier)) +"${ChatColor.GREEN}${ChatColor.BOLD}ENABLED" else +"${ChatColor.RED}${ChatColor.BOLD}DISABLED"
     }
     icon.itemMeta = meta
@@ -90,19 +88,24 @@ fun updateIcon(icon: ItemStack, identifier: String): ItemStack {
 }
 
 fun createMaxGamesChooser(): ItemStack {
-    println(GameManager.maxGames)
-
     return itemStack(Material.PAPER) {
         meta {
-            setDisplayName("${ChatColor.LIGHT_PURPLE}Choose max games")
+            setDisplayName("${ChatColor.GOLD}Choose Max-Games")
             setLore {
-                +" "
-                +"${ChatColor.GRAY}Max games: ${ChatColor.GREEN}${ChatColor.BOLD}${GameManager.maxGames}"
-                +" "
-                +"${ChatColor.GRAY}Leftclick ${ChatColor.GREEN}+${ChatColor.GRAY} | Rightclick ${ChatColor.RED}-"
-                +" "
-                +"${ChatColor.DARK_RED}${ChatColor.BOLD}IMPORTANT${ChatColor.GRAY}:"
-                +"${ChatColor.GRAY}The maximum games should be higher than the selected games"
+                + " "
+                + "${ChatColor.GRAY}Selected Games: ${ChatColor.GREEN}${GameManager.gamePool.size}"
+                + "§8Total Games in the Game-Pool"
+                + " "
+                + "${ChatColor.GRAY}Max games: ${ChatColor.GREEN}${GameManager.maxGames}"
+                + "§8Amount of games to be played"
+                + " "
+                + "${ChatColor.AQUA}Rechtsklick ${ChatColor.GRAY}runter"
+                + "${ChatColor.YELLOW}Linksklick ${ChatColor.GRAY}hoch"
+                + " "
+                + "${ChatColor.DARK_RED}${ChatColor.BOLD}IMPORTANT:${ChatColor.GRAY}"
+                + " §7The number of§a max games"
+                + " §7must§c not§7 be higher than the"
+                + " §7number of§a selected games§7."
             }
         }
     }
