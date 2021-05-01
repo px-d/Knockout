@@ -140,25 +140,30 @@ fun Player.addPoints(amount: Int, silent: Boolean = false) {
     }
 }
 
-fun Player.ping() {
-    playSound(location, Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f)
+fun Player.ping(pitch: Float = 1f) {
+    playSound(location, Sound.BLOCK_NOTE_BLOCK_PLING, 1f, pitch)
 }
 
-fun Player.teleportSound() {
-    playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f)
+fun Player.teleportSound(pitch: Float = 1f) {
+    playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 1f, pitch)
 }
 
-fun Player.killSound() {
-    playSound(location, Sound.BLOCK_BELL_USE, .5f, .1f)
+fun Player.killSound(pitch: Float = 1f) {
+    playSound(location, Sound.BLOCK_BELL_USE, .5f, pitch)
 }
 
-fun Player.suicideSound() {
-    playSound(location, Sound.ENTITY_IRON_GOLEM_DAMAGE, 1f, 1f)
+fun Player.suicideSound(pitch: Float = 1f) {
+    playSound(location, Sound.ENTITY_IRON_GOLEM_DAMAGE, 1f, pitch)
 }
 
-fun Player.fuseSound() {
-    playSound(location, Sound.ENTITY_TNT_PRIMED, 0.5f, 1f)
+fun Player.fuseSound(pitch: Float = 1f) {
+    playSound(location, Sound.ENTITY_TNT_PRIMED, 0.5f, pitch)
 }
+
+fun Player.xpSound(pitch: Float = 1f) {
+    playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, pitch)
+}
+
 
 fun Player.timeBombSound() {
     playSound(location, Sound.BLOCK_NOTE_BLOCK_BELL, 1f, .6f)
