@@ -3,6 +3,7 @@ package de.soho5k.game.events
 import de.soho5k.utils.gameListen
 import net.axay.kspigot.event.SingleListener
 import net.axay.kspigot.event.listen
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
@@ -21,7 +22,7 @@ class CommonEvents(
     private val cancelBlockPlace: Boolean = true,
     private val cancelItemDrop: Boolean = true,
     private val cancelItemPickup: Boolean = true,
-    private val cancelEntityDamage: Boolean = false
+    private val cancelPlayerDamage: Boolean = false
 ) : Listener {
     fun allEvents(): List<Listener> {
         return listOf(
@@ -30,7 +31,7 @@ class CommonEvents(
             listen<BlockPlaceEvent> { if (cancelBlockPlace) it.isCancelled = true },
             listen<PlayerDropItemEvent> { if (cancelItemDrop) it.isCancelled = true },
             listen<EntityDropItemEvent> { if (cancelItemDrop) it.isCancelled = true },
-            listen<EntityDamageEvent> { if (cancelEntityDamage) it.isCancelled = true },
+            listen<EntityDamageEvent> { if (cancelPlayerDamage && it.entity is Player) it.isCancelled = true },
             listen<EntityPickupItemEvent> { if (cancelItemPickup) it.isCancelled = true }
         )
     }
