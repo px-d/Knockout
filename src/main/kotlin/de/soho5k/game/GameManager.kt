@@ -2,37 +2,41 @@ package de.soho5k.game
 
 import de.hglabor.velocity.queue.constants.QChannels
 import de.hglabor.velocity.queue.jedis.JedisManager
+import de.soho5k.commands.Games
 import de.soho5k.game.events.LobbyEvents
 import de.soho5k.game.games.*
-import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.KnockoutPlayer
 import de.soho5k.player.PlayerManager
 import de.soho5k.utils.extensions.*
+import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.runnables.firstSync
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.thenSync
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.command.CommandSender
+import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.ItemFlag
 
 object GameManager {
 
     //List of all Minigames
     var gamePool: ArrayList<GameSchematic> = arrayListOf(
         AnvilRain(),
-//        Firefly(),
-//        HotPotato(),
-//        KnockbackFFA(),
+        Firefly(),
+        HotPotato(),
+        KnockbackFFA(),
         KOTH(),
         Minefield(),
-//        MoleCraft(),
+        MoleCraft(),
         OITC(),
-//        RainbowRun(),
-//        Riptide(),
-//        Spleef(),
+        RainbowRun(),
+        Riptide(),
+        Spleef(),
         SurvivalGames(),
-//        TNTRun()
+        TNTRun(),
         Snowfight()
     )
 
@@ -67,6 +71,17 @@ object GameManager {
     var lobbytime = ConfigManager.lobbytime
 
     /**
+     *  The max value of games
+     */
+    var maxGames = 10
+
+    /**
+     *  Iconlist for settingsgui
+     */
+
+    val gameIcons: ArrayList<Games> = arrayListOf()
+
+    /**
      * Instance of all Events (for easier un-/registration)
      */
     val events = LobbyEvents()
@@ -74,6 +89,7 @@ object GameManager {
     fun enable() {
         println(">> Starting GameManager")
         Bukkit.getPluginManager().registerEvents(events, Knockout.INSTANCE)
+        registerIcons()
         tick()
         println(ConfigManager.knockoutFont)
     }
@@ -91,7 +107,7 @@ object GameManager {
                 if (lobbytime == 0) {
                     gameStarted = true
                     inLobby = false
-                    for (i in 0..10) {
+                    for (i in 0 until maxGames) {
                         if (gamePool.isNotEmpty()) {
                             val game = gamePool.random()
                             activeGames.add(game)
@@ -141,6 +157,42 @@ object GameManager {
     }
 
     /**
+     * Register the Icon for the Games
+     */
+
+    fun registerIcons() {
+
+        gameIcons.add(Games("Anvilrain", "anvilrain", itemStack(Material.ANVIL) {}))
+        gameIcons.add(Games("Firefly", "firefly", itemStack(Material.ORANGE_WOOL) {}))
+        gameIcons.add(
+            Games(
+                "Knockback FFA",
+                "kbffa",
+                itemStack(Material.STICK) { addUnsafeEnchantment(Enchantment.KNOCKBACK, 1) })
+        )
+        gameIcons.add(Games("OITC", "oitc", itemStack(Material.WOODEN_SWORD) {}))
+        gameIcons.add(Games("Rainbowrun", "rainbowrun", itemStack(Material.PINK_STAINED_GLASS) {}))
+        gameIcons.add(Games("Survivalgames", "sg", itemStack(Material.CHEST) {}))
+        gameIcons.add(Games("Spleef", "spleef", itemStack(Material.GOLDEN_SHOVEL) {}))
+        gameIcons.add(Games("TNTRun", "tntrun", itemStack(Material.TNT) {}))
+        gameIcons.add(Games("King of the Hill", "koth", itemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {}))
+        gameIcons.add(Games("Minefield", "minefield", itemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {}))
+        gameIcons.add(Games("Riptide", "riptide", itemStack(Material.TRIDENT) {}))
+        gameIcons.add(Games("Snowfight", "snowfight", itemStack(Material.SNOWBALL) {}))
+
+
+        gameIcons.sortBy { it.name }
+
+        gameIcons.forEach {
+            val meta = it.icon.itemMeta
+            meta?.setDisplayName("${ChatColor.GOLD}${it.name}")
+            meta?.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES)
+            it.icon.itemMeta = meta
+        }
+
+    }
+
+    /**
      * Enable the game with given id
      * @param id ID of the Game you want to enable
      * @return If the Addition was successful or not
@@ -181,7 +233,13 @@ object GameManager {
                 "riptide" -> {
                     gamePool.add(Riptide())
                 }
-                else -> return false
+                "snowfight" -> {
+                    gamePool.add(Snowfight())
+                }
+                else -> {
+                    println("No game found named: $id")
+                    return false
+                }
             }
             return true
         }
