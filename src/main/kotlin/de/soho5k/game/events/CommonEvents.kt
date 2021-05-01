@@ -7,6 +7,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDropItemEvent
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
@@ -19,7 +20,8 @@ class CommonEvents(
     private val cancelBlockBreak: Boolean = true,
     private val cancelBlockPlace: Boolean = true,
     private val cancelItemDrop: Boolean = true,
-    private val cancelItemPickup: Boolean = true
+    private val cancelItemPickup: Boolean = true,
+    private val cancelEntityDamage: Boolean = false
 ) : Listener {
     fun allEvents(): List<Listener> {
         return listOf(
@@ -28,7 +30,7 @@ class CommonEvents(
             listen<BlockPlaceEvent> { if (cancelBlockPlace) it.isCancelled = true },
             listen<PlayerDropItemEvent> { if (cancelItemDrop) it.isCancelled = true },
             listen<EntityDropItemEvent> { if (cancelItemDrop) it.isCancelled = true },
-            listen<PlayerPickupItemEvent>{},
+            listen<EntityDamageEvent> { if (cancelEntityDamage) it.isCancelled = true },
             listen<EntityPickupItemEvent> { if (cancelItemPickup) it.isCancelled = true }
         )
     }
