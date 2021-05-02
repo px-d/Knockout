@@ -70,6 +70,10 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
                 if (enabled) {
                     GameManager.disableGame(element.identifier)
                 } else GameManager.enableGame(element.identifier)
+                if (GameManager.maxGames < GameManager.gamePool.size || GameManager.maxGames > GameManager.gamePool.size) {
+                    GameManager.maxGames = GameManager.gamePool.size
+                }
+
                 updateIcon(clickedIcon, element.identifier)
                 clickEvent.guiInstance[Slots.RowSixSlotOne] = createMaxGamesChooser()
             }
