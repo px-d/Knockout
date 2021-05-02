@@ -70,7 +70,7 @@ class Firefly : GameSchematic(
         }
 
         task(period = 2L) { runnable ->
-            if (!running) runnable.cancel()
+            if (!isRunning) runnable.cancel()
             val amount = Random.nextInt(49) + 1
             for (i in 0..amount) {
                 if (blocks.any { it.block.type != Material.AIR }) {

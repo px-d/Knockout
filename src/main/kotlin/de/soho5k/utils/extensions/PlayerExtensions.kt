@@ -11,7 +11,6 @@ import de.soho5k.utils.PREFIX
 import de.soho5k.utils.QUOTATION
 import net.axay.kspigot.extensions.bukkit.feed
 import net.axay.kspigot.extensions.bukkit.heal
-import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.runnables.task
 import org.bukkit.*
 import org.bukkit.entity.Player

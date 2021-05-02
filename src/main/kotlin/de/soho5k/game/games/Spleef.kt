@@ -63,7 +63,7 @@ class Spleef :
                 if (it.player.inventory.itemInMainHand.type == Material.SNOWBALL) {
                     it.isCancelled = true
                     it.player.sendLocalizedMessage(
-                        "MESSAGE.spleef.useshovel",
+                        "MESSAGES.spleef.useshovel",
                         prefix = false,
                         mainColor = ChatColor.RED
                     )

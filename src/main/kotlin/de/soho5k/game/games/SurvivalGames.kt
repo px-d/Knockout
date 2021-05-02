@@ -58,7 +58,7 @@ class SurvivalGames :
 
     override fun preGrace() {
         addEvent(listen<PlayerMoveEvent> {
-            if (!running) {
+            if (!isRunning) {
                 val from: Location = it.from
                 val to: Location = it.to ?: return@listen
                 val x = floor(from.x)
@@ -121,7 +121,7 @@ class SurvivalGames :
             }
         })
         addEvent(listen<PlayerInteractEvent> {
-            if (!GameManager.activeGame.running) {
+            if (!GameManager.activeGame.isRunning) {
                 if (it.clickedBlock?.type == Material.CHEST) it.isCancelled = true
                 return@listen
             }

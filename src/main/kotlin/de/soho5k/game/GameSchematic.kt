@@ -25,7 +25,7 @@ abstract class GameSchematic(
     var spawn: Location,
     private var duration: Int,
     var grace: Int = 0,
-    var running: Boolean = false,
+    private var running: Boolean = false,
     private val events: ArrayList<Listener> = arrayListOf(),
     var multiplier: Int = 1,
     var broadcast: Int = 10
@@ -35,6 +35,9 @@ abstract class GameSchematic(
      */
     val time: Int get() = duration
     val id: String get() = identifier
+
+    val isRunning: Boolean
+        get() = running
 
     var stopped = false
 
@@ -90,7 +93,7 @@ abstract class GameSchematic(
 
         //START THE GAME AFTER GRACE PERIOD
         task(delay = (grace * 20L), howOften = 1L) {
-            if (!running) {
+            if (!isRunning) {
                 registerAll()
                 onStart()
                 equip()
@@ -143,7 +146,7 @@ abstract class GameSchematic(
                 duration--
             }
 
-            if (!running || stopped) {
+            if (!isRunning || stopped) {
                 it.cancel()
             }
         }
