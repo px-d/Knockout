@@ -35,15 +35,12 @@ class AnvilRain : GameSchematic(
     private val pointDistributor = PointDistributor()
 
 
-
-
-
     override fun tick() {
         if (time % 2 == 0) rate += 2
         task(period = 1L, howOften = rate.toLong()) {
             if (!running) it.cancel()
-            val x = Random.nextInt(40) - 20
-            val z = Random.nextInt(40) - 20
+            val x = Random.nextInt(60) - 30
+            val z = Random.nextInt(60) - 30
 
             val f = spawnLoc.world!!.spawnFallingBlock(
                 spawnLoc.clone().add(x.toDouble(), 100.0, z.toDouble()),

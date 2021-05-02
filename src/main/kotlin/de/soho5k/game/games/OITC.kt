@@ -10,10 +10,7 @@ import de.soho5k.utils.oitcEquip
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.runnables.task
-import org.bukkit.Bukkit
-import org.bukkit.GameMode
-import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.entity.Arrow
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
@@ -36,6 +33,7 @@ class OITC : GameSchematic(
     private val spawns = ConfigManager.getSpawns("oitc")
 
     override fun onStart() {
+        spawn.world?.setGameRule(GameRule.KEEP_INVENTORY, true)
         addEvent(listen<PlayerDropItemEvent> {
             it.isCancelled = true
         })
@@ -55,7 +53,8 @@ class OITC : GameSchematic(
             if (it.entity is Arrow) {
                 if (it.entity.shooter is Player && it.hitEntity is Player) {
                     (it.hitEntity as Player).inventory.clear()
-                    (it.hitEntity as Player).damage(200.0, it.entity.shooter as Player)
+
+                    killPlayer(it.hitEntity as Player, it.entity.shooter as Player)
                 }
                 it.entity.remove()
             }
@@ -98,7 +97,7 @@ class OITC : GameSchematic(
             from.inventory.addItem(ItemStack(Material.ARROW))
             from.heal()
         }
-        task(delay = 20L) {
+        task(delay = 2L) {
             if (killed.uniqueId == from.uniqueId) {
                 from.addPoints(-3)
             } else {

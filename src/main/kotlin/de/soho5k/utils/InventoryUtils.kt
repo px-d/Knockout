@@ -7,9 +7,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import util.ItemBuilder
 
+val queueItem = ItemBuilder(Material.HEART_OF_THE_SEA).name("&6Queue").build()
+
 val kbffastick: ItemStack = ItemBuilder(Material.STICK).enchant(Enchantment.KNOCKBACK, 2).build()
 val spleefShovel: ItemStack = ItemBuilder(Material.GOLDEN_SHOVEL).setUnbreakable(true).build()
-val snowFightShovel: ItemStack = ItemBuilder(Material.WOODEN_SHOVEL).setUnbreakable(true).enchant(Enchantment.DIG_SPEED, 1).build()
+val snowFightShovel: ItemStack =
+    ItemBuilder(Material.WOODEN_SHOVEL).setUnbreakable(true).enchant(Enchantment.DIG_SPEED, 1).build()
 val oitcBow: ItemStack = ItemBuilder(Material.BOW).setUnbreakable(true).build()
 val oitcSword: ItemStack = ItemBuilder(Material.WOODEN_SWORD).setUnbreakable(true).build()
 val butcherSword: ItemStack = ItemBuilder(Material.NETHERITE_SWORD).setUnbreakable(true).build()

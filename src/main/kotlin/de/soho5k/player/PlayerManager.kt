@@ -8,7 +8,10 @@ import de.soho5k.knockout.managers.RankingManager
 import de.soho5k.utils.Localization.getLocalized
 import de.soho5k.utils.extensions.*
 import de.soho5k.utils.lobbyEquip
+import de.soho5k.utils.queueItem
 import net.axay.kspigot.extensions.bukkit.feed
+import net.axay.kspigot.extensions.bukkit.heal
+import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.Bukkit
 import org.bukkit.attribute.Attribute
@@ -73,6 +76,7 @@ object PlayerManager {
     }
 
     fun registerPlayer(player: Player) {
+        checkTime()
         players[player.uniqueId] = KnockoutPlayer(player.uniqueId)
         player.board = FastBoard(player)
         player.updateBoardTitle("&b&l${player.getLocalized("SCOREBOARD.lobby.title")}")
@@ -83,6 +87,8 @@ object PlayerManager {
         player.lobbyEquip()
         player.flySpeed = .1F
         player.walkSpeed = .2F
+        player.heal()
+        player.feed()
         refreshAllBoards()
         Knockout.team.addEntry(player.name)
         for (i in player.activePotionEffects) {
@@ -90,6 +96,10 @@ object PlayerManager {
         }
         updateTablists()
         RankingManager.updateRankings()
+
+        if (GameManager.inLobby && !GameManager.gameStarted) {
+            player.inventory.setItem(4, queueItem)
+        }
     }
 
     fun registerQueuePlayer(uuid: UUID) {
@@ -143,6 +153,59 @@ object PlayerManager {
     fun checkForAlive() {
         if (alivePlayers <= 1 && !GameManager.inLobby) {
             GameManager.activeGame.stop()
+        }
+    }
+
+    private fun checkTime() {
+        when (players.values.filter { it.mode == PlayerMode.PLAY || it.mode == PlayerMode.QUEUE }.size) {
+            in 0..4 -> {
+                if (GameManager.lobbytime > 180) {
+                    GameManager.lobbytime = 180
+                    onlinePlayers.forEach {
+                        it.ping()
+                        it.sendLocalizedMessage(
+                            "MESSAGE.time_shortened",
+                            replacements = arrayOf(180.toTime())
+                        )
+                    }
+                }
+            }
+            in 5..10 -> {
+                if (GameManager.lobbytime > 120) {
+                    GameManager.lobbytime = 120
+                    onlinePlayers.forEach {
+                        it.ping()
+                        it.sendLocalizedMessage(
+                            "MESSAGE.time_shortened",
+                            replacements = arrayOf(120.toTime())
+                        )
+                    }
+                }
+            }
+            in 11..30 -> {
+                if (GameManager.lobbytime > 90) {
+                    GameManager.lobbytime = 90
+                    onlinePlayers.forEach {
+                        it.ping()
+                        it.sendLocalizedMessage(
+                            "MESSAGE.time_shortened",
+                            replacements = arrayOf(90.toTime())
+                        )
+                    }
+                }
+            }
+            else -> {
+                if (GameManager.lobbytime > 30) {
+                    GameManager.lobbytime = 30
+                    onlinePlayers.forEach {
+                        it.ping()
+                        it.sendLocalizedMessage(
+                            "MESSAGE.time_shortened",
+                            replacements = arrayOf(30.toTime())
+                        )
+                    }
+                }
+            }
         }
     }
 }
