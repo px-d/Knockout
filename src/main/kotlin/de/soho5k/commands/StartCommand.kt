@@ -14,8 +14,9 @@ class StartCommand : CommandExecutor {
 
         if (sender.hasPermission("knockout.start")) {
             if (!GameManager.gameStarted) {
-                GameManager.lobbytime = 10
-            }else{
+                if (GameManager.lobbytime > 10)
+                    GameManager.lobbytime = 10
+            } else {
                 sender.sendMessage("Game Already Started")
             }
         }

@@ -9,7 +9,9 @@ import de.soho5k.knockout.Knockout
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.KnockoutPlayer
 import de.soho5k.player.PlayerManager
+import de.soho5k.utils.clearInv
 import de.soho5k.utils.extensions.*
+import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.runnables.firstSync
 import net.axay.kspigot.runnables.task
@@ -31,7 +33,7 @@ object GameManager {
 //        KOTH(),
 //        Minefield(),
 //        MoleCraft(),
-//        OITC(),
+        OITC(),
 //        RainbowRun(),
 //        Riptide(),
 //        Spleef(),
@@ -68,7 +70,7 @@ object GameManager {
     /**
      *  Time Players have to wait in Lobby (will ich noch abhängig von Spielerzahl machen)
      */
-    var lobbytime = ConfigManager.lobbytime
+    var lobbytime: Int = ConfigManager.lobbytime
 
     /**
      *  The max value of games
@@ -76,7 +78,7 @@ object GameManager {
     var maxGames = if (gamePool.size < 10) gamePool.size else 10
 
     /**
-     *  Iconlist for settingsgui
+     *  Icon-List for Settings-GUI
      */
 
     val gameIcons: ArrayList<Games> = arrayListOf()
@@ -117,6 +119,7 @@ object GameManager {
                         }
                     }
                     activeGame = drawNewGame()
+                    onlinePlayers.forEach { it.clearInv() }
                     activeGame.start()
                 } else {
                     if (lobbytime.shouldBroadcast(10)) {
@@ -160,8 +163,7 @@ object GameManager {
      * Register the Icon for the Games
      */
 
-    fun registerIcons() {
-
+    private fun registerIcons() {
         gameIcons.add(Games("Anvilrain", "anvilrain", itemStack(Material.ANVIL) {}))
         gameIcons.add(Games("Firefly", "firefly", itemStack(Material.ORANGE_WOOL) {}))
         gameIcons.add(
@@ -170,7 +172,7 @@ object GameManager {
                 "kbffa",
                 itemStack(Material.STICK) { addUnsafeEnchantment(Enchantment.KNOCKBACK, 1) })
         )
-        gameIcons.add(Games("OITC", "oitc", itemStack(Material.WOODEN_SWORD) {}))
+        gameIcons.add(Games("OITC", "oitc", itemStack(Material.ARROW) {}))
         gameIcons.add(Games("Rainbowrun", "rainbowrun", itemStack(Material.PINK_STAINED_GLASS) {}))
         gameIcons.add(Games("Survivalgames", "sg", itemStack(Material.CHEST) {}))
         gameIcons.add(Games("Spleef", "spleef", itemStack(Material.GOLDEN_SHOVEL) {}))
