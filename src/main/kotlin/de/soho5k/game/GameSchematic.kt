@@ -39,7 +39,7 @@ abstract class GameSchematic(
     var stopped = false
 
     private val configFile = File("${Knockout.INSTANCE.dataFolder}/games/${identifier}.yml")
-    private val config = YamlConfiguration.loadConfiguration(configFile)
+    val config = YamlConfiguration.loadConfiguration(configFile)
 
     init {
         grace = config.setOrDefault("$identifier.grace", grace, configFile) as Int

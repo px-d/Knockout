@@ -181,7 +181,7 @@ object GameManager {
         gameIcons.add(Games("Minefield", "minefield", itemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {}))
         gameIcons.add(Games("Riptide", "riptide", itemStack(Material.TRIDENT) {}))
         gameIcons.add(Games("Snowfight", "snowfight", itemStack(Material.SNOWBALL) {}))
-
+        gameIcons.add(Games("Redlights", "redlights", itemStack(Material.RED_WOOL) {}))
 
         gameIcons.sortBy { it.name }
 
@@ -238,6 +238,7 @@ object GameManager {
                 "snowfight" -> {
                     gamePool.add(Snowfight())
                 }
+                "redlights" -> gamePool.add(Redlights())
                 else -> {
                     println("No game found named: $id")
                     return false
