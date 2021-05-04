@@ -1,6 +1,9 @@
 package de.soho5k.commands
 
 import de.soho5k.game.GameManager
+import de.soho5k.utils.extensions.sendLocalizedMessage
+import de.soho5k.utils.extensions.toTime
+import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 
@@ -14,10 +17,17 @@ class StartCommand : CommandExecutor {
 
         if (sender.hasPermission("knockout.start")) {
             if (!GameManager.gameStarted) {
-                if (GameManager.lobbytime > 10)
+                if (GameManager.lobbytime > 10) {
                     GameManager.lobbytime = 10
+                    sender.sendLocalizedMessage(
+                        "MESSAGES.lobby.shortened",
+                        false,
+                        ChatColor.RED,
+                        replacements = arrayOf(10.toTime())
+                    )
+                }
             } else {
-                sender.sendMessage("Game Already Started")
+                sender.sendLocalizedMessage("MESSAGES.lobby.already_started", false, ChatColor.RED)
             }
         }
 

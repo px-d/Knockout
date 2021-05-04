@@ -4,7 +4,6 @@ import de.soho5k.utils.PREFIX
 import org.bukkit.ChatColor
 import java.awt.Color
 
-
 fun String.toScoreboard(
     totalPlayers: Int? = null,
     alivePlayers: Int? = null,

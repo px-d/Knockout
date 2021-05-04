@@ -7,12 +7,16 @@ import de.soho5k.game.events.LobbyEvents
 import de.soho5k.game.games.*
 import de.soho5k.knockout.Knockout
 import de.soho5k.knockout.managers.ConfigManager
+import de.soho5k.knockout.queue.GameInfoProvider
 import de.soho5k.player.KnockoutPlayer
 import de.soho5k.player.PlayerManager
+import de.soho5k.player.PlayerMode
 import de.soho5k.utils.clearInv
 import de.soho5k.utils.extensions.*
 import net.axay.kspigot.extensions.onlinePlayers
+import net.axay.kspigot.extensions.server
 import net.axay.kspigot.items.itemStack
+import net.axay.kspigot.pluginmessages.PluginMessageConnect
 import net.axay.kspigot.runnables.firstSync
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.thenSync
@@ -93,7 +97,6 @@ object GameManager {
         Bukkit.getPluginManager().registerEvents(events, Knockout.INSTANCE)
         registerIcons()
         tick()
-        println(ConfigManager.knockoutFont)
     }
 
     /**
@@ -105,7 +108,7 @@ object GameManager {
                 wrapUpGame()
                 it.cancel()
             }
-            if (PlayerManager.alivePlayers >= ConfigManager.minPlayers && !gameStarted) {
+            if (PlayerManager.alivePlayers + PlayerManager.queuedPlayers >= ConfigManager.minPlayers && !gameStarted) {
                 if (lobbytime == 0) {
                     gameStarted = true
                     inLobby = false
@@ -134,8 +137,15 @@ object GameManager {
                     PlayerManager.refreshAllBoards()
                     lobbytime--
 
-                    if (lobbytime <= 5 && Knockout.useQueue) {
+                    if (lobbytime == 5 && Knockout.useQueue) {
                         JedisManager.publish(QChannels.QUEUE_MOVE.get(), Knockout.serverName)
+                        onlinePlayers.forEach { p ->
+                            p.clearInv()
+                        }
+                    }
+
+                    if (lobbytime == 2) {
+                        onlinePlayers.forEach { p -> p.mode = PlayerMode.PLAY }
                     }
                 }
             } else {
@@ -202,47 +212,22 @@ object GameManager {
     fun enableGame(id: String): Boolean {
         if (!isGameEnabled(id)) {
             when (id) {
-                "anvilrain" -> {
-                    gamePool.add(AnvilRain())
-                }
-                "firefly" -> {
-                    gamePool.add(Firefly())
-                }
-                "kbffa" -> {
-                    gamePool.add(KnockbackFFA())
-                }
-                "oitc" -> {
-                    gamePool.add(OITC())
-                }
-                "rainbowrun" -> {
-                    gamePool.add(RainbowRun())
-                }
-                "sg" -> {
-                    gamePool.add(SurvivalGames())
-                }
-                "spleef" -> {
-                    gamePool.add(Spleef())
-                }
-                "tntrun" -> {
-                    gamePool.add(TNTRun())
-                }
-                "koth" -> {
-                    gamePool.add(KOTH())
-                }
-                "minefield" -> {
-                    gamePool.add(Minefield())
-                }
-                "riptide" -> {
-                    gamePool.add(Riptide())
-                }
-                "snowfight" -> {
-                    gamePool.add(Snowfight())
-                }
+                "anvilrain" -> gamePool.add(AnvilRain())
+                "firefly" -> gamePool.add(Firefly())
+                "hotpotato" -> gamePool.add(HotPotato())
+                "kbffa" -> gamePool.add(KnockbackFFA())
+                "koth" -> gamePool.add(KOTH())
+                "minefield" -> gamePool.add(Minefield())
+                "molecraft" -> gamePool.add(MoleCraft())
+                "oitc" -> gamePool.add(OITC())
+                "rainbowrun" -> gamePool.add(RainbowRun())
                 "redlights" -> gamePool.add(Redlights())
-                else -> {
-                    println("No game found named: $id")
-                    return false
-                }
+                "riptide" -> gamePool.add(Riptide())
+                "snowfight" -> gamePool.add(Snowfight())
+                "spleef" -> gamePool.add(Spleef())
+                "sg" -> gamePool.add(SurvivalGames())
+                "tntrun" -> gamePool.add(TNTRun())
+                else -> return false
             }
             return true
         }
@@ -255,18 +240,15 @@ object GameManager {
      * @return If the Deletion was successful or not
      */
     fun disableGame(id: String): Boolean {
-        if (isGameEnabled(id)) {
-            gamePool.remove(gamePool.find { it.id == id })
-            return true
+        return isGameEnabled(id).also {
+            if (it) gamePool.remove(gamePool.find { g -> g.id == id })
         }
-        return false
     }
 
     /**
      * Check if a game is enabled/not enabled
      * @param id the ID you want to check
-     * @return  true if enabled
-     *          false if disabled
+     * @return  **true** if enabled / **false** if disabled
      */
     fun isGameEnabled(id: String): Boolean {
         return gamePool.find { it.id == id } != null
@@ -280,21 +262,24 @@ object GameManager {
         ended = true
         PlayerManager.teleportToLobby()
 
+        if (activeGame.isRunning) activeGame.stop()
+
+
         task(delay = 60L) {
             val list = PlayerManager.players.values.sortedBy { it.points }.reversed()
 
             val text =
-                arrayListOf("[rgb:255,77,77] 1. &7${list.first().player?.name} &8- &7${list.first().points} P.".tc())
+                arrayListOf("[rgb:255,77,77] 1. &7${list.first().name} &8- &7${list.first().points} P.".tc())
 
             if (list.second() != null) {
                 if (list.second() is KnockoutPlayer) {
-                    text.add("[rgb:255,111,66] 2. &7${(list.second() as KnockoutPlayer).player?.name} &8- &7${(list.second() as KnockoutPlayer).points} P.".tc())
+                    text.add("[rgb:255,111,66] 2. &7${(list.second() as KnockoutPlayer).name} &8- &7${(list.second() as KnockoutPlayer).points} P.".tc())
                 }
             }
 
             if (list.third() != null) {
                 if (list.third() is KnockoutPlayer) {
-                    text.add("[rgb:255,152,70] 3. &7${(list.third() as KnockoutPlayer).player?.name} &8- &7${(list.third() as KnockoutPlayer).points} P.".tc())
+                    text.add("[rgb:255,152,70] 3. &7${(list.third() as KnockoutPlayer).name} &8- &7${(list.third() as KnockoutPlayer).points} P.".tc())
                 }
             }
 
@@ -303,7 +288,12 @@ object GameManager {
                 i.sendMessage("")
                 text.forEach { i.sendMessage(it) }
                 i.sendMessage("")
-                i.sendLocalizedMessage("MESSAGES.gameover_2", false, ChatColor.RED, replacements = arrayOf("60"))
+                i.sendLocalizedMessage(
+                    "MESSAGES.gameover_2",
+                    false,
+                    ChatColor.RED,
+                    replacements = arrayOf("${Knockout.restartTime}")
+                )
                 i.refreshBoard()
             }
 
@@ -313,8 +303,9 @@ object GameManager {
                 Knockout.multiverse.cloneWorld("sg_default", "sg", null)
             }.execute()
 
-            task(delay = 60 * 20) {
-                //restart server
+            task(delay = (Knockout.restartTime * 20).toLong()) {
+                onlinePlayers.forEach { PluginMessageConnect(Knockout.lobbyServerName).sendWithPlayer(it) }
+                server.spigot().restart()
             }
         }
     }

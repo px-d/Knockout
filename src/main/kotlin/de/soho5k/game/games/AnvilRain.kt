@@ -38,7 +38,7 @@ class AnvilRain : GameSchematic(
     override fun tick() {
         if (time % 2 == 0) rate += 2
         task(period = 1L, howOften = rate.toLong()) {
-            if (!running) it.cancel()
+            if (!isRunning) it.cancel()
             val x = Random.nextInt(60) - 30
             val z = Random.nextInt(60) - 30
 

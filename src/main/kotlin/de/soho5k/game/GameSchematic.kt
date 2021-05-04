@@ -12,8 +12,8 @@ import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
@@ -51,13 +51,9 @@ abstract class GameSchematic(
         ConfigManager.spawns[identifier] = spawn
     }
 
-    fun addEvent(event: Listener) {
-        events.add(event)
-    }
+    fun addEvent(event: Listener) = events.add(event)
+    fun addEvent(events: List<Listener>) = events.forEach { addEvent(it) }
 
-    fun addEvent(events: List<Listener>) {
-        events.forEach { addEvent(it) }
-    }
 
     /**
      * Start the Game
@@ -82,7 +78,7 @@ abstract class GameSchematic(
             onlinePlayers.forEach { p ->
                 p.title(
                     "&e${p.getLocalized("SCOREBOARD.title.$id")}".tc(),
-                    if (grace > 0) "&7..${graceperiod.toTime()}".tc() else "",
+                    if (grace > 0) "&7${".".repeat(graceperiod)}${graceperiod.toTime()}${".".repeat(graceperiod)}".tc() else "",
                     0,
                     21,
                     0
@@ -93,7 +89,7 @@ abstract class GameSchematic(
 
         //START THE GAME AFTER GRACE PERIOD
         task(delay = (grace * 20L), howOften = 1L) {
-            if (!isRunning) {
+            if (!stopped) {
                 registerAll()
                 onStart()
                 equip()
@@ -182,13 +178,23 @@ abstract class GameSchematic(
 
     private fun registerAll() {
         if (stopped) return
-//        events.forEach { it.register() }
         Bukkit.getPluginManager().callEvent(GameStartEvent(this, events))
         HandlerList.unregisterAll(GameManager.events)
-        Bukkit.getOnlinePlayers().forEach {
-            it.ping()
+        onlinePlayers.forEach {
+            it.ping(1.2f)
             it.sendLocalizedMessage("MESSAGES.game.started")
             it.title("", it.getLocalized("TEXT_glhf").tc())
+        }
+    }
+
+    fun barrier(borderB: Location, borderT: Location, target: Material, replaceWith: Material) {
+        for (x in borderB.blockX..borderT.blockX) {
+            for (y in borderB.blockY..borderT.blockY) {
+                for (z in borderB.blockZ..borderT.blockZ) {
+                    val loc = Location(spawn.world, x.toDouble(), y.toDouble(), z.toDouble())
+                    if (loc.block.type == target) loc.block.type = replaceWith
+                }
+            }
         }
     }
 }

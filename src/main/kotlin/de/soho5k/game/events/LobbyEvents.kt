@@ -2,7 +2,9 @@ package de.soho5k.game.events
 
 import de.soho5k.knockout.Knockout
 import de.soho5k.knockout.managers.ConfigManager
+import de.soho5k.player.PlayerManager
 import net.axay.kspigot.extensions.bukkit.isFeetInWater
+import net.axay.kspigot.pluginmessages.PluginMessageConnect
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -53,6 +55,13 @@ class LobbyEvents : Listener {
                 }
                 if (e.clickedBlock?.type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {
                     e.player.velocity = e.player.location.direction.multiply(4.0).setY(1.2)
+                }
+            }
+
+            if (e.action == Action.RIGHT_CLICK_AIR || e.action == Action.RIGHT_CLICK_BLOCK) {
+                if (e.player.inventory.itemInMainHand.type == Material.HEART_OF_THE_SEA) {
+                    PlayerManager.registerQueuePlayer(e.player.uniqueId)
+                    PluginMessageConnect(Knockout.lobbyServerName).sendWithPlayer(e.player)
                 }
             }
         }

@@ -27,7 +27,7 @@ var gameCount = 0
 
 val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
 
-    title = "Choose Games"
+    title = "Choose Games:"
 
     page(1) {
         placeholder(Slots.Border, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = null } })
@@ -37,7 +37,7 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
             iconGenerator = {
                 createMaxGamesChooser()
             },
-            onClick = { clickEvent, element ->
+            onClick = { clickEvent, _ ->
                 clickEvent.bukkitEvent.isCancelled = true
                 var maxGames = GameManager.maxGames
                 val click = clickEvent.bukkitEvent.click

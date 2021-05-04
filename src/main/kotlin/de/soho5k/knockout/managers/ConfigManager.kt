@@ -26,13 +26,6 @@ object ConfigManager {
     lateinit var lobbyLoc: Location
     lateinit var world_lobby: World
 
-    const val knockoutFont = "    __ __                  __               __ \n" +
-            "   / //_/____  ____  _____/ /______  __  __/ /_\n" +
-            "  / ,<  / __ \\/ __ \\/ ___/ //_/ __ \\/ / / / __/\n" +
-            " / /| |/ / / / /_/ / /__/ ,< / /_/ / /_/ / /_  \n" +
-            "/_/ |_/_/ /_/\\____/\\___/_/|_|\\____/\\__,_/\\__/  \n" +
-            "                                              "
-
     fun enable() {
         println(">> Starting ConfigManager")
         config = Knockout.INSTANCE.config

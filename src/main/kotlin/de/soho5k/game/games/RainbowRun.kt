@@ -7,12 +7,12 @@ import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
+import de.soho5k.utils.extensions.getOrSet
 import de.soho5k.utils.extensions.mode
+import de.soho5k.utils.extensions.sendLocalizedMessage
 import net.axay.kspigot.event.listen
-import org.bukkit.Bukkit
-import org.bukkit.GameMode
-import org.bukkit.Location
-import org.bukkit.Material
+import net.axay.kspigot.extensions.onlinePlayers
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -37,7 +37,11 @@ class RainbowRun : GameSchematic(
     private val border = arrayListOf<Location>()
     private val placement = PointDistributor()
 
+    private val borderT = config.getOrSet("border_top", Location(spawn.world, 3.0, 72.0, 22.0)) as Location
+    private val borderB = config.getOrSet("border_bot", Location(spawn.world, 3.0, 70.0, -22.0)) as Location
+
     override fun onStart() {
+        barrier(borderB, borderT, Material.WHITE_STAINED_GLASS_PANE, Material.AIR)
         addEvent(listen<PlayerMoveEvent> {
             if (it.player.isInWater && it.player.mode == PlayerMode.PLAY) {
                 placement.addPlayer(it.player)
@@ -47,6 +51,16 @@ class RainbowRun : GameSchematic(
                 it.player.teleport(loc)
                 if (PlayerManager.alivePlayers == 1) {
                     GameManager.activeGame.stop()
+                }
+
+                onlinePlayers.forEach { p ->
+                    p.sendLocalizedMessage(
+                        "MESSAGES.game.player_finished",
+                        false,
+                        ChatColor.RED,
+                        ChatColor.GOLD,
+                        it.player.name
+                    )
                 }
             }
             if (it.player.location.y <= 50) {
@@ -98,5 +112,6 @@ class RainbowRun : GameSchematic(
     override fun onStop() {
         for (i in border) i.block.type = Material.WHITE_STAINED_GLASS
         placement.giveRewards(RewardMode.POSITION_THEN_X)
+        barrier(borderB, borderT, Material.AIR, Material.WHITE_STAINED_GLASS)
     }
 }

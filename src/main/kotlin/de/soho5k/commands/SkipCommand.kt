@@ -12,7 +12,6 @@ import org.bukkit.entity.Player
 class SkipCommand : CommandExecutor {
 
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
-
         if (sender.hasPermission("knockout.skip")) {
             if (args.size == 1) {
                 if (args[0].equals("confirm", true)) {

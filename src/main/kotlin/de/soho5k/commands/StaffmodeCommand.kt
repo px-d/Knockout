@@ -5,6 +5,7 @@ import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.extensions.sendLocalizedMessage
+import de.soho5k.utils.extensions.tc
 import net.axay.kspigot.annotations.UnsafeImplementation
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -27,6 +28,7 @@ class StaffmodeCommand : CommandExecutor {
             "MESSAGES.mode",
             replacements = arrayOf(sender.mode.toString().toLowerCase().capitalize())
         )
+        sender.sendMessage("&4This is very unstabled. I haven't implemented it correctly as of right now. Please only use sparely.".tc())
         PlayerManager.refreshAllBoards()
         for (i in Bukkit.getOnlinePlayers()) {
             i.hidePlayer(Knockout.INSTANCE, sender)

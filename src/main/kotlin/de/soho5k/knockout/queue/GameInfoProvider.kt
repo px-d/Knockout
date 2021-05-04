@@ -11,6 +11,9 @@ import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.extensions.server
+import net.axay.kspigot.pluginmessages.PluginMessageConnect
+import net.axay.kspigot.pluginmessages.PluginMessagePlayerList
+import net.axay.kspigot.pluginmessages.PluginMessagePlayerListAllServers
 import net.axay.kspigot.runnables.task
 import redis.clients.jedis.JedisPubSub
 import java.util.*
@@ -38,7 +41,7 @@ object GameInfoProvider {
     }
 }
 
-class QueueChannel(val serverName: String) : JedisPubSub() {
+class QueueChannel(private val serverName: String) : JedisPubSub() {
 
     override fun onMessage(channel: String, message: String) {
         val inLobby = GameManager.gameStarted

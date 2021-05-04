@@ -77,7 +77,7 @@ object PlayerManager {
 
     fun registerPlayer(player: Player) {
         checkTime()
-        players[player.uniqueId] = KnockoutPlayer(player.uniqueId)
+        players[player.uniqueId] = KnockoutPlayer(player.uniqueId, player.name)
         player.board = FastBoard(player)
         player.updateBoardTitle("&b&l${player.getLocalized("SCOREBOARD.lobby.title")}")
 
@@ -97,18 +97,9 @@ object PlayerManager {
         updateTablists()
         RankingManager.updateRankings()
 
-        if (GameManager.inLobby && !GameManager.gameStarted) {
+        if (GameManager.inLobby && !GameManager.gameStarted && GameManager.lobbytime > 10) {
             player.inventory.setItem(4, queueItem)
         }
-    }
-
-    fun registerQueuePlayer(uuid: UUID) {
-        players[uuid] = KnockoutPlayer(uuid)
-        players[uuid]?.mode = PlayerMode.QUEUE
-    }
-
-    fun unregisterQueuePlayer(uuid: UUID) {
-        players.remove(uuid)
     }
 
     fun unregisterPlayer(player: Player) {
@@ -117,13 +108,23 @@ object PlayerManager {
             player.deleteBoard()
             refreshAllBoards()
         } else {
-            if (!GameManager.gameStarted) {
-                players.remove(player.uniqueId)
-            } else {
+            if (GameManager.gameStarted) {
                 players[player.uniqueId]?.mode = PlayerMode.LEFT
+            } else {
+                players.remove(player.uniqueId)
             }
         }
     }
+
+    fun registerQueuePlayer(uuid: UUID) {
+        players[uuid] = KnockoutPlayer(uuid, "")
+        players[uuid]?.mode = PlayerMode.QUEUE
+    }
+
+    fun unregisterQueuePlayer(uuid: UUID) {
+        players.remove(uuid)
+    }
+
 
     fun setToSpectator(player: Player) {
         player.walkSpeed = 0.2f
@@ -140,7 +141,7 @@ object PlayerManager {
         player.inventory.clear()
         player.allowFlight = false
         player.isCollidable = true
-        for (i in player.activePotionEffects) player.removePotionEffect(i.type)
+        player.removeAllPotionEffects()
         for (i in Bukkit.getOnlinePlayers()) i.showPlayer(Knockout.INSTANCE, player)
     }
 
@@ -182,7 +183,7 @@ object PlayerManager {
                     }
                 }
             }
-            in 11..30 -> {
+            in 11..20 -> {
                 if (GameManager.lobbytime > 90) {
                     GameManager.lobbytime = 90
                     onlinePlayers.forEach {
@@ -194,14 +195,26 @@ object PlayerManager {
                     }
                 }
             }
-            else -> {
-                if (GameManager.lobbytime > 30) {
-                    GameManager.lobbytime = 30
+            in 21..30 ->{
+                if (GameManager.lobbytime > 45) {
+                    GameManager.lobbytime = 45
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
                             "MESSAGE.time_shortened",
-                            replacements = arrayOf(30.toTime())
+                            replacements = arrayOf(45.toTime())
+                        )
+                    }
+                }
+            }
+            else -> {
+                if (GameManager.lobbytime > 20) {
+                    GameManager.lobbytime = 20
+                    onlinePlayers.forEach {
+                        it.ping()
+                        it.sendLocalizedMessage(
+                            "MESSAGE.time_shortened",
+                            replacements = arrayOf(20.toTime())
                         )
                     }
                 }
