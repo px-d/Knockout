@@ -3,6 +3,7 @@ package de.soho5k.utils
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.mode
+import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
@@ -49,13 +50,11 @@ class PointDistributor {
      *      PER_POSITION = First in list gets 1 Point, Second 2, Third 3 and so on
      */
     fun giveRewards(mode: RewardMode = RewardMode.FIRST, points: List<Int> = listOf(5, 4, 3, 2, 1)) {
+
         when (mode) {
             RewardMode.FIRST -> {
                 addRemainingPlayers()
                 val list = players.reversed()
-                for (i in list) {
-                    println(i.name)
-                }
                 for (i in list.indices) {
                     if ((points.size - 1) >= i) {
                         list[i].addPoints(points[i])
@@ -69,9 +68,8 @@ class PointDistributor {
                 }
             }
             RewardMode.POSITION_THEN_X -> {
-                val remaining =
-                    Bukkit.getOnlinePlayers().filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
-                        .sortedBy { it.location.x }.reversed()
+                val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
+                    .sortedBy { it.location.x }.reversed()
                 for (i in remaining) {
                     players.add(i)
                 }
@@ -80,9 +78,8 @@ class PointDistributor {
                 }
             }
             RewardMode.POSITION_THEN_Y -> {
-                val remaining =
-                    Bukkit.getOnlinePlayers().filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
-                        .sortedBy { it.location.y }.reversed()
+                val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
+                    .sortedBy { it.location.y }.reversed()
                 for (i in remaining) {
                     players.add(i)
                 }

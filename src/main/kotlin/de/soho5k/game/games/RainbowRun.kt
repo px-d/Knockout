@@ -32,8 +32,6 @@ class RainbowRun : GameSchematic(
     10,
     broadcast = 20
 ) {
-
-    private val border = arrayListOf<Location>()
     private val placement = PointDistributor()
 
     private val borderT = config.getOrSet("border_top", Location(spawn.world, 3.0, 72.0, 22.0)) as Location
@@ -78,29 +76,6 @@ class RainbowRun : GameSchematic(
         addEvent(listen<BlockPlaceEvent> { it.isCancelled = it.player.gameMode != GameMode.CREATIVE })
         addEvent(listen<FoodLevelChangeEvent> { it.isCancelled = true })
 
-        val radius = 50
-        val world = spawn.world ?: throw Exception("World Not Existing")
-        val loc = spawn
-
-        for (x in -radius..radius) {
-            for (y in -radius..radius) {
-                for (z in -radius..radius) {
-                    val block = world.getBlockAt(
-                        loc.blockX + x,
-                        loc.blockY + y,
-                        loc.blockZ + z
-                    )
-                    if (block.type == Material.WHITE_STAINED_GLASS) {
-                        border.add(block.location.clone())
-                    }
-                }
-            }
-        }
-
-        for (i in border) {
-            i.block.type = Material.AIR
-        }
-
         Knockout.team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
         Knockout.team.setCanSeeFriendlyInvisibles(true)
         for (i in Bukkit.getOnlinePlayers()) {
@@ -109,7 +84,6 @@ class RainbowRun : GameSchematic(
     }
 
     override fun onStop() {
-        for (i in border) i.block.type = Material.WHITE_STAINED_GLASS
         placement.giveRewards(RewardMode.POSITION_THEN_X)
         barrier(borderB, borderT, Material.AIR, Material.WHITE_STAINED_GLASS)
     }

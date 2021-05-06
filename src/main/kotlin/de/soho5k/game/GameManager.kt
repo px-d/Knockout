@@ -1,5 +1,6 @@
 package de.soho5k.game
 
+import de.dytanic.cloudnet.ext.bridge.bukkit.BukkitCloudNetHelper
 import de.hglabor.velocity.queue.constants.QChannels
 import de.hglabor.velocity.queue.jedis.JedisManager
 import de.soho5k.commands.Games
@@ -121,7 +122,7 @@ object GameManager {
                         }
                     }
                     activeGame = drawNewGame()
-                    onlinePlayers.forEach { it.clearInv() }
+                    BukkitCloudNetHelper.changeToIngame()
                     activeGame.start()
                 } else {
                     if (lobbytime.shouldBroadcast(10)) {
@@ -135,12 +136,13 @@ object GameManager {
                     }
                     PlayerManager.refreshAllBoards()
                     lobbytime--
-
-                    if (lobbytime == 5 && Knockout.useQueue) {
-                        JedisManager.publish(QChannels.QUEUE_MOVE.get(), Knockout.serverName)
+                    if (lobbytime == 9) {
                         onlinePlayers.forEach { p ->
                             p.clearInv()
                         }
+                    }
+                    if (lobbytime == 8) {
+                        if (Knockout.useQueue) JedisManager.publish(QChannels.QUEUE_MOVE.get(), Knockout.serverName)
                     }
 
                     if (lobbytime == 2) {

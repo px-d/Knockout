@@ -92,7 +92,7 @@ class HotPotato :
                 if (crash < 10) {
                     players.keys.filter { player -> player.isPotato }.forEach { player ->
                         player.timeBombSound()
-                        player.actionBar(player.getLocalized("TEXT.explodesoon").tc())
+                        player.actionBar("&c${player.getLocalized("TEXT.explodesoon")}".tc())
                     }
                 }
             }

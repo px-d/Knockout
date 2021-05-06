@@ -160,8 +160,8 @@ object PlayerManager {
     private fun checkTime() {
         when (players.values.filter { it.mode == PlayerMode.PLAY || it.mode == PlayerMode.QUEUE }.size) {
             in 0..4 -> {
-                if (GameManager.lobbytime > 180) {
-                    GameManager.lobbytime = 180
+                if (GameManager.lobbytime > 120) {
+                    GameManager.lobbytime = 120
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
@@ -172,13 +172,13 @@ object PlayerManager {
                 }
             }
             in 5..10 -> {
-                if (GameManager.lobbytime > 120) {
-                    GameManager.lobbytime = 120
+                if (GameManager.lobbytime > 100) {
+                    GameManager.lobbytime = 100
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
                             "MESSAGE.time_shortened",
-                            replacements = arrayOf(120.toTime())
+                            replacements = arrayOf(100.toTime())
                         )
                     }
                 }

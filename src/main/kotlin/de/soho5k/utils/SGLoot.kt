@@ -23,7 +23,7 @@ object SGLoot {
     private val special_sword: ItemStack =
         ItemBuilder(Material.GOLDEN_SWORD).name("&fRelaxo-Slayer").enchant(Enchantment.FIRE_ASPECT, 1).build()
 
-    val fns: ItemStack = ItemBuilder(Material.FLINT_AND_STEEL).damage(3).build()
+    private val fns: ItemStack = ItemBuilder(Material.FLINT_AND_STEEL).damage(3).build()
 
     init {
         low_tier.add(150.0, item(Material.IRON_INGOT))

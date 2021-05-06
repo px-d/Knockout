@@ -4,6 +4,7 @@ import de.soho5k.game.GameSchematic
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.addPoints
+import de.soho5k.utils.extensions.getOrSet
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.molecraftEquip
 import net.axay.kspigot.event.listen
@@ -26,9 +27,14 @@ class MoleCraft :
         broadcast = 20
     ) {
 
-    private val blocks = arrayListOf<Location>()
+
+    private val top = config.getOrSet("container.top", Location(spawn.world, 30.0, 59.0, 30.0)) as Location
+    private val bot = config.getOrSet("container.top", Location(spawn.world, -30.0, 44.0, -30.0)) as Location
 
     override fun onStart() {
+
+        val loc = barrier(bot, top, null, Material.DIRT)
+
         addEvent(listen<EntityDamageEvent> { it.isCancelled = true })
         addEvent(listen<BlockBreakEvent> {
             it.isDropItems = false
@@ -44,30 +50,13 @@ class MoleCraft :
                 Material.EMERALD_ORE -> {
                     player.addPoints(3)
                 }
+                else -> it.isCancelled = true
             }
         })
 
         addEvent(listen<PlayerDropItemEvent> { it.isCancelled = true })
 
-        val radius = 40
-        val spawn = ConfigManager.spawns["molecraft"] ?: throw Exception("No Spawn saved for 'molecraft'")
-        for (x in -radius..radius) {
-            for (y in -radius..radius) {
-                for (z in -radius..radius) {
-                    val block = spawn.world!!.getBlockAt(
-                        spawn.blockX + x,
-                        spawn.blockY + y,
-                        spawn.blockZ + z
-                    )
-                    if (block.type == Material.DIRT) {
-                        blocks.add(block.location.clone())
-                    }
-                }
-            }
-        }
-
-
-        for (i in blocks) {
+        for (i in loc) {
             val random = Random.nextDouble()
             if (i.block.getRelative(BlockFace.UP).type != Material.AIR) {
                 if (random >= 0.0 && random < .01) {
@@ -88,9 +77,7 @@ class MoleCraft :
     }
 
     override fun onStop() {
-        for (i in blocks) {
-            i.block.type = Material.DIRT
-        }
+        barrier(bot, top, null, Material.DIRT)
     }
 
 }

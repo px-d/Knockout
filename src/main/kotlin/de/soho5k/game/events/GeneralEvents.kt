@@ -2,6 +2,7 @@ package de.soho5k.game.events
 
 import de.soho5k.game.GameManager
 import de.soho5k.knockout.Knockout
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.QUOTATION
@@ -16,10 +17,27 @@ import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.event.server.ServerListPingEvent
 
 object GeneralEvents : Listener {
 
     fun enable() {
+        listen<ServerListPingEvent> {
+            if (GameManager.activeGame == null) {
+                if (PlayerManager.alivePlayers + PlayerManager.queuedPlayers >= ConfigManager.minPlayers) {
+                    it.motd = "&7Warmup: &c${GameManager.lobbytime.toTime()}s".tc()
+                } else {
+                    it.motd = "&cWaiting...".tc()
+                }
+            } else {
+                if (GameManager.ended) {
+                    it.motd = "&cGame Over!".tc()
+                } else {
+                    it.motd = "&7Current Game: &b${GameManager.activeGame.name}".tc()
+                }
+            }
+        }
+
         listen<PlayerLoginEvent> {
             if (GameManager.gameStarted) {
                 it.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game is currently running.")

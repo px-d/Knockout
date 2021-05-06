@@ -1,7 +1,9 @@
 name: Knockout
 main: de.soho5k.knockout.Knockout
 version: 1.0
-author: soho5k
+authors:
+  - soho5k
+  - Hotkeyyy
 load: POSTWORLD
 api-version: 1.16
 depend:

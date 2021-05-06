@@ -194,9 +194,10 @@ fun broadcastIntroToAll(id: String) {
         i.sendMessage("&7${i.getLocalized("TEXT.welcome_to")}: &b&l${i.getLocalized("SCOREBOARD.title.$id")}".tc())
         i.sendMessage("&9${i.getLocalized("TEXT.how_does_it_work")}:".tc())
         i.sendMessage("")
-        for (x in i.getLocalized("MESSAGES.intro.$id").split("{n}")) {
-            i.sendMessage("&7$x".tc())
-        }
+        i.sendLocalizedMessage("MESSAGES.intro.$id", false)
+//        for (x in i.getLocalized("MESSAGES.intro.$id").split("{n}")) {
+//            i.sendMessage("&7$x".tc())
+//        }
         i.sendMessage("&7===========================================".tc())
     }
 }

@@ -7,13 +7,9 @@ import java.util.*
 class KnockoutPlayer(
     val uuid: UUID,
     val name: String,
-    var survivedRounds: Int = 0,
     var points: Int = 0,
     var mode: PlayerMode = PlayerMode.PLAY
 ) {
-
     val player: Player?
         get() = Bukkit.getPlayer(uuid)
-
-
 }

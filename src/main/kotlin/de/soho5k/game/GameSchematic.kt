@@ -183,18 +183,31 @@ abstract class GameSchematic(
         onlinePlayers.forEach {
             it.ping(1.2f)
             it.sendLocalizedMessage("MESSAGES.game.started")
-            it.title("", it.getLocalized("TEXT_glhf").tc())
+            it.title("", "&7${it.getLocalized("TEXT_glhf")}".tc())
         }
     }
 
-    fun barrier(borderB: Location, borderT: Location, target: Material, replaceWith: Material) {
-        for (x in borderB.blockX..borderT.blockX) {
-            for (y in borderB.blockY..borderT.blockY) {
-                for (z in borderB.blockZ..borderT.blockZ) {
+    fun barrier(
+        borderBottom: Location,
+        borderTop: Location,
+        target: Material? = null,
+        replaceWith: Material
+    ): HashSet<Location> {
+        val locations = hashSetOf<Location>()
+        for (x in borderBottom.blockX..borderTop.blockX) {
+            for (y in borderBottom.blockY..borderTop.blockY) {
+                for (z in borderBottom.blockZ..borderTop.blockZ) {
                     val loc = Location(spawn.world, x.toDouble(), y.toDouble(), z.toDouble())
-                    if (loc.block.type == target) loc.block.type = replaceWith
+                    if (target != null) {
+                        if (loc.block.type == target) loc.block.type = replaceWith
+                        locations.add(loc)
+                    } else {
+                        loc.block.type = replaceWith
+                        locations.add(loc)
+                    }
                 }
             }
         }
+        return locations
     }
 }
