@@ -2,8 +2,8 @@ package de.soho5k.player
 
 import board.FastBoard
 import de.soho5k.game.GameManager
-import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.managers.RankingManager
 import de.soho5k.utils.Localization.getLocalized
 import de.soho5k.utils.extensions.*
@@ -195,7 +195,7 @@ object PlayerManager {
                     }
                 }
             }
-            in 21..30 ->{
+            in 21..30 -> {
                 if (GameManager.lobbytime > 45) {
                     GameManager.lobbytime = 45
                     onlinePlayers.forEach {

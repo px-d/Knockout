@@ -8,7 +8,10 @@ import de.soho5k.player.PlayerMode
 import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
 import de.soho5k.utils.SGLoot
-import de.soho5k.utils.extensions.*
+import de.soho5k.utils.extensions.mode
+import de.soho5k.utils.extensions.sendLocalizedMessage
+import de.soho5k.utils.extensions.tc
+import de.soho5k.utils.extensions.toTime
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
@@ -26,10 +29,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.inventory.EquipmentSlot
 import util.ItemBuilder
-import javax.swing.text.rtf.RTFEditorKit
 import kotlin.math.floor
 import kotlin.math.round
-import kotlin.random.Random
 
 
 class SurvivalGames :

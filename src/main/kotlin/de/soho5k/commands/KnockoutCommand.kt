@@ -2,10 +2,8 @@ package de.soho5k.commands
 
 import de.soho5k.utils.extensions.tc
 import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
-
 import org.bukkit.command.CommandExecutor
-import org.bukkit.entity.Player
+import org.bukkit.command.CommandSender
 
 class KnockoutCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {

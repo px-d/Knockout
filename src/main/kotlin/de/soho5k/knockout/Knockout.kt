@@ -12,16 +12,13 @@ import de.soho5k.knockout.queue.GameInfoProvider
 import de.soho5k.knockout.queue.QueueChannel
 import de.soho5k.player.PlayerManager
 import de.soho5k.utils.extensions.getOrSet
-import de.soho5k.utils.extensions.sendLocalizedMessage
 import de.soho5k.utils.extensions.tc
 import de.soho5k.utils.soholo.HoloManager
 import net.axay.kspigot.extensions.bukkit.kick
 import net.axay.kspigot.extensions.bukkit.register
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.main.KSpigot
-import net.axay.kspigot.pluginmessages.PluginMessageConnect
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 

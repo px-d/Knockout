@@ -14,7 +14,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerDropItemEvent
-import java.lang.Exception
 import kotlin.random.Random
 
 class MoleCraft :

@@ -18,7 +18,7 @@ public class GameStartEvent extends Event {
     /**
      * Called when a Minigame has started.
      *
-     * @param game The Game that has just started.
+     * @param game     The Game that has just started.
      * @param listener All Listeners that have been registered for the Game that just started.
      */
     public GameStartEvent(GameSchematic game, List<Listener> listener) {
@@ -26,13 +26,13 @@ public class GameStartEvent extends Event {
         this.listener = listener;
     }
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
         return handlers;
     }
 

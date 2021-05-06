@@ -20,13 +20,13 @@ public class GameEndEvent extends Event {
         this.game = game;
     }
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    @NotNull
+    @Override
+    public HandlerList getHandlers() {
         return handlers;
     }
 }

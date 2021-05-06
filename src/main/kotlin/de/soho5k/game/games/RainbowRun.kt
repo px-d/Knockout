@@ -23,7 +23,6 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scoreboard.Team
-import java.lang.Exception
 
 class RainbowRun : GameSchematic(
     "Rainbow Run",

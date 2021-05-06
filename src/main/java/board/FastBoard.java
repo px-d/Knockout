@@ -165,6 +165,21 @@ public class FastBoard {
     }
 
     /**
+     * Update all the scoreboard lines.
+     *
+     * @param lines the new lines
+     * @throws IllegalArgumentException if one line is longer than 30 chars on 1.12 or lower
+     * @throws IllegalStateException    if {@link #delete()} was call before
+     */
+    public void setLines(List<String> lines) {
+        List<String> list = new ArrayList<>();
+        for (String s : lines) {
+            list.add(ChatColor.translateAlternateColorCodes('&', s));
+        }
+        updateLines(list);
+    }
+
+    /**
      * Get the specified scoreboard line.
      *
      * @param line the line number
@@ -226,21 +241,6 @@ public class FastBoard {
         List<String> lines = new ArrayList<>(this.lines);
         lines.remove(line);
         updateLines(lines);
-    }
-
-    /**
-     * Update all the scoreboard lines.
-     *
-     * @param lines the new lines
-     * @throws IllegalArgumentException if one line is longer than 30 chars on 1.12 or lower
-     * @throws IllegalStateException    if {@link #delete()} was call before
-     */
-    public void setLines(List<String> lines) {
-        List<String> list = new ArrayList<>();
-        for (String s : lines) {
-            list.add(ChatColor.translateAlternateColorCodes('&', s));
-        }
-        updateLines(list);
     }
 
     /**

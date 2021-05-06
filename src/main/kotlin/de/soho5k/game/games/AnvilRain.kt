@@ -16,7 +16,10 @@ import org.bukkit.Material
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.entity.*
+import org.bukkit.event.entity.EntityChangeBlockEvent
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
+import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import kotlin.random.Random

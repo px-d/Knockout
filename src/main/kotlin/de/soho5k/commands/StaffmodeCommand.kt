@@ -9,9 +9,8 @@ import de.soho5k.utils.extensions.tc
 import net.axay.kspigot.annotations.UnsafeImplementation
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
-
 import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 /**
