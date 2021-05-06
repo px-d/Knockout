@@ -51,14 +51,16 @@ class Minefield :
                 if (it.action != Action.PHYSICAL) return@listen
                 if (it.clickedBlock?.type == Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {
                     it.player.fuseSound()
-                    it.player.teleport(Location(
-                        spawn.world,
-                        it.player.location.x,
-                        it.player.location.y,
-                        spawn.z,
-                        it.player.location.yaw,
-                        it.player.location.pitch
-                    ))
+                    it.player.teleport(
+                        Location(
+                            spawn.world,
+                            it.player.location.x,
+                            it.player.location.y,
+                            spawn.z,
+                            it.player.location.yaw,
+                            it.player.location.pitch
+                        )
+                    )
                 }
             },
                 listen<PlayerMoveEvent> {

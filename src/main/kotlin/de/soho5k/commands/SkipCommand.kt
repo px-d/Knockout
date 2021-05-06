@@ -4,9 +4,8 @@ import de.soho5k.game.GameManager
 import de.soho5k.utils.extensions.sendLocalizedMessage
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
-
 import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class SkipCommand : CommandExecutor {

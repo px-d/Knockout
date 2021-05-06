@@ -23,8 +23,8 @@ import java.util.function.Consumer;
  */
 public class ItemBuilder {
 
-    private ItemStack item;
     private final ItemMeta meta;
+    private ItemStack item;
 
     public ItemBuilder(Material material) {
         this(new ItemStack(material));

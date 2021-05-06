@@ -1,8 +1,8 @@
 package de.soho5k.game.games
 
 import de.soho5k.game.GameSchematic
-import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.clearInv
 import de.soho5k.utils.extensions.*

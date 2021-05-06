@@ -1,7 +1,6 @@
 package de.soho5k.utils
 
 import com.mojang.util.UUIDTypeAdapter
-import org.bukkit.entity.Player
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URL

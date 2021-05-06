@@ -1,7 +1,7 @@
 package de.soho5k.game
 
-import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.Knockout
+import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.utils.Localization.getLocalized
 import de.soho5k.utils.extensions.*

@@ -1,7 +1,7 @@
 package de.soho5k.game.games
 
-import de.soho5k.game.events.CommonEvents
 import de.soho5k.game.GameSchematic
+import de.soho5k.game.events.CommonEvents
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.mode

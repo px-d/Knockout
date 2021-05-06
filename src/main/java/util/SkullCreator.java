@@ -27,15 +27,13 @@ import java.util.UUID;
  */
 public class SkullCreator {
 
-    private SkullCreator() {
-    }
-
     private static boolean warningPosted = false;
-
     // some reflection stuff to be used when setting a skull's profile
     private static Field blockProfileField;
     private static Method metaSetProfileMethod;
     private static Field metaProfileField;
+    private SkullCreator() {
+    }
 
     /**
      * Creates a player skull, should work in both legacy and new Bukkit APIs.

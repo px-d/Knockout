@@ -1,12 +1,12 @@
 package de.soho5k.utils.soholo
 
 import de.soho5k.utils.soholo.utils.Hashids
+import de.soho5k.utils.soholo.utils.NoHoloException
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.WorldCreator
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
-import de.soho5k.utils.soholo.utils.NoHoloException
 import java.io.File
 import java.util.*
 

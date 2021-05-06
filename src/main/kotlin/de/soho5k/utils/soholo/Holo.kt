@@ -4,7 +4,6 @@ import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
-import java.lang.IndexOutOfBoundsException
 
 class Holo(private val location: Location, text: List<String>, private val small: Boolean) {
 

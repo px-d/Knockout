@@ -6,14 +6,12 @@ import de.soho5k.utils.extensions.tc
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
-
 import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import java.io.File
-import java.lang.Exception
 
 class GenerateConfig : CommandExecutor, TabCompleter {
 

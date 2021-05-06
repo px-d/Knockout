@@ -10,10 +10,6 @@ import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import net.axay.kspigot.extensions.onlinePlayers
-import net.axay.kspigot.extensions.server
-import net.axay.kspigot.pluginmessages.PluginMessageConnect
-import net.axay.kspigot.pluginmessages.PluginMessagePlayerList
-import net.axay.kspigot.pluginmessages.PluginMessagePlayerListAllServers
 import net.axay.kspigot.runnables.task
 import redis.clients.jedis.JedisPubSub
 import java.util.*

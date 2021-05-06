@@ -7,7 +7,6 @@ import de.soho5k.game.events.LobbyEvents
 import de.soho5k.game.games.*
 import de.soho5k.knockout.Knockout
 import de.soho5k.knockout.managers.ConfigManager
-import de.soho5k.knockout.queue.GameInfoProvider
 import de.soho5k.player.KnockoutPlayer
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode

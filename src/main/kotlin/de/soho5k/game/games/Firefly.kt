@@ -1,8 +1,8 @@
 package de.soho5k.game.games
 
-import de.soho5k.game.events.CommonEvents
 import de.soho5k.game.GameManager
 import de.soho5k.game.GameSchematic
+import de.soho5k.game.events.CommonEvents
 import de.soho5k.player.PlayerManager
 import de.soho5k.utils.PointDistributor
 import net.axay.kspigot.event.listen
@@ -14,7 +14,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerMoveEvent
-import java.lang.Exception
 import kotlin.random.Random
 
 /**
@@ -31,7 +30,6 @@ class Firefly : GameSchematic(
 ) {
     private val blocks = arrayListOf<Location>()
     private val placements = PointDistributor()
-
 
 
     override fun onStart() {
