@@ -38,20 +38,20 @@ class Redlights : GameSchematic(
     private val randomTimeYellowToRed = config.getOrSet("settings.yellowToRed", 6) as Int
     private val pointDistributor = PointDistributor()
 
-    private val borderT = config.getOrSet("border_top", Location(spawn.world, 3.0, 62.0, 19.0)) as Location
-    private val borderB = config.getOrSet("border_bot", Location(spawn.world, 3.0, 60.0, -19.0)) as Location
+    private val borderT = setConfig("border_top", Location(spawn.world, 3.0, 62.0, 19.0)) as Location
+    private val borderB =  setConfig("border_bot", Location(spawn.world, 3.0, 60.0, -19.0)) as Location
 
     private val trafficLights = hashSetOf<Location>()
 
     private val traffic1T =
-        config.getOrSet("trafficlight.first.top", Location(spawn.world, 18.0, 67.0, -22.0)) as Location
+        setConfig("trafficlight.first.top", Location(spawn.world, 18.0, 67.0, -22.0)) as Location
     private val traffic1B =
-        config.getOrSet("trafficlight.first.bottom", Location(spawn.world, 18.0, 67.0, 22.0)) as Location
+        setConfig("trafficlight.first.bottom", Location(spawn.world, 18.0, 67.0, 22.0)) as Location
 
     private val traffic2T =
-        config.getOrSet("trafficlight.second.top", Location(spawn.world, 87.0, 67.0, -22.0)) as Location
+        setConfig("trafficlight.second.top", Location(spawn.world, 87.0, 67.0, -22.0)) as Location
     private val traffic2B =
-        config.getOrSet("trafficlight.second.bottom", Location(spawn.world, 87.0, 67.0, 22.0)) as Location
+        setConfig("trafficlight.second.bottom", Location(spawn.world, 87.0, 67.0, 22.0)) as Location
 
     init {
         for (z in traffic1T.blockZ..traffic1B.blockZ) {

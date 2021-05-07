@@ -8,11 +8,13 @@ import de.soho5k.player.PlayerMode
 import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
 import de.soho5k.utils.SGLoot
+import de.soho5k.utils.clearInv
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.extensions.sendLocalizedMessage
 import de.soho5k.utils.extensions.tc
 import de.soho5k.utils.extensions.toTime
 import net.axay.kspigot.event.listen
+import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.*
@@ -27,6 +29,7 @@ import org.bukkit.event.entity.*
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerPickupArrowEvent
 import org.bukkit.inventory.EquipmentSlot
 import util.ItemBuilder
 import kotlin.math.floor
@@ -121,11 +124,17 @@ class SurvivalGames :
                 it.entity.teleport(spawn)
             }
         })
+        addEvent(listen<PlayerPickupArrowEvent> {
+            if (it.player.mode != PlayerMode.PLAY) {
+                it.isCancelled = true
+            }
+        })
         addEvent(listen<PlayerInteractEvent> {
             if (!GameManager.activeGame.isRunning) {
                 if (it.clickedBlock?.type == Material.CHEST) it.isCancelled = true
                 return@listen
             }
+
 
             if (it.player.mode == PlayerMode.SPECTATE) {
                 it.isCancelled = true
@@ -134,30 +143,54 @@ class SurvivalGames :
                 }
                 return@listen
             }
+            if (it.action == Action.RIGHT_CLICK_BLOCK || it.action == Action.RIGHT_CLICK_AIR) {
+                val p = it.player
+                if (p.mode == PlayerMode.PLAY) {
+                    val interactItem = p.getHandItem(it.hand) ?: return@listen
+                    if (interactItem.type.isStew) {
+                        var ifConsume = false
+                        if (p.health < p.healthScale) {
+                            (p.health + 7).let { i ->
+                                if (i >= p.healthScale) p.health = p.healthScale else p.health = i
+                            }
+                            ifConsume = true
+                        } else if (p.foodLevel < 20) {
+                            (p.foodLevel + interactItem.type.restoredFood).let { i ->
+                                if (i >= 20) p.foodLevel = 20 else p.foodLevel = i
+                            }
+                            (p.saturation + interactItem.type.restoredSaturation).let { i ->
+                                if (i >= p.foodLevel) p.saturation = p.foodLevel.toFloat() else p.saturation = i
+                            }
+                            p.playSound(p.location, Sound.ENTITY_PLAYER_BURP, 1f, 1f)
+                            ifConsume = true
+                        }
 
-            if (it.player.mode == PlayerMode.PLAY && it.item?.type == Material.COMPASS && it.hand == EquipmentSlot.HAND) {
-                val clicker = it.player
-                val players = onlinePlayers.filter { p -> p != clicker && p.mode == PlayerMode.PLAY }
-                var nearest = players.first()
+                        if (ifConsume) interactItem.type = Material.BOWL
 
-                for (i in players) {
-                    if (i.location.distance(clicker.location) < nearest.location.distance(clicker.location)) {
-                        nearest = i
+                    } else if (interactItem.type == Material.COMPASS && it.hand == EquipmentSlot.HAND) {
+                        val clicker = it.player
+                        val players = onlinePlayers.filter { p -> p != clicker && p.mode == PlayerMode.PLAY }
+                        var nearest = players.first()
+
+                        for (i in players) {
+                            if (i.location.distance(clicker.location) < nearest.location.distance(clicker.location)) {
+                                nearest = i
+                            }
+                        }
+
+                        clicker.compassTarget = nearest.location
+                        clicker.sendLocalizedMessage(
+                            "MESSAGES.tracker.nearby",
+                            false,
+                            ChatColor.AQUA,
+                            ChatColor.YELLOW,
+                            replacements = arrayOf(
+                                nearest.name,
+                                "${round(clicker.location.distance(nearest.location) * 10) / 10}"
+                            )
+                        )
                     }
                 }
-
-                clicker.compassTarget = nearest.location
-                clicker.sendLocalizedMessage(
-                    "MESSAGES.tracker.nearby",
-                    false,
-                    ChatColor.AQUA,
-                    ChatColor.YELLOW,
-                    replacements = arrayOf(
-                        nearest.name,
-                        "${round(clicker.location.distance(nearest.location) * 10) / 10}"
-                    )
-                )
-
             }
 
         })
@@ -200,11 +233,13 @@ class SurvivalGames :
         })
 
         addEvent(listen<PlayerDeathEvent> {
+            it.keepInventory = true
             for (i in it.entity.inventory.contents) {
                 if (i != null) {
                     it.entity.world.dropItemNaturally(it.entity.location, i)
                 }
             }
+            it.entity.clearInv()
             it.entity.mode = PlayerMode.SPECTATE
             task(delay = 5L) { _ ->
                 it.entity.spigot().respawn()
@@ -238,4 +273,26 @@ class SurvivalGames :
     override fun onStop() {
         pointDistributor.giveRewards(RewardMode.FIRST, listOf(6, 4, 2))
     }
+
+    private val Material.isStew: Boolean
+        get() = when (this) {
+            Material.MUSHROOM_STEW -> true
+            Material.BEETROOT_SOUP -> true
+            Material.RABBIT_STEW -> true
+            else -> false
+        }
+
+    private val Material.restoredFood: Int
+        get() = when (this) {
+            Material.MUSHROOM_STEW, Material.BEETROOT_SOUP -> 6
+            Material.RABBIT_STEW -> 10
+            else -> 0
+        }
+
+    private val Material.restoredSaturation: Float
+        get() = when (this) {
+            Material.MUSHROOM_STEW, Material.BEETROOT_SOUP -> 7.2f
+            Material.RABBIT_STEW -> 12f
+            else -> 0f
+        }
 }

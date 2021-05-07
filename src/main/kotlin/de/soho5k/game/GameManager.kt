@@ -23,25 +23,25 @@ import net.axay.kspigot.runnables.thenSync
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
-import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 
 object GameManager {
 
     //List of all Minigames
     var gamePool: ArrayList<GameSchematic> = arrayListOf(
-//        AnvilRain(),
+        AnvilRain(),
 //        Firefly(),
-//        HotPotato(),
+        HotPotato(),
 //        KnockbackFFA(),
-//        KOTH(),
-//        Minefield(),
-//        MoleCraft(),
+        KOTH(),
+        Minefield(),
+        MoleCraft(),
         OITC(),
-//        RainbowRun(),
+        RainbowRun(),
+        Redlights(),
 //        Riptide(),
 //        Spleef(),
-//        SurvivalGames(),
+        SurvivalGames(),
 //        TNTRun(),
 //        Snowfight()
     )
@@ -142,7 +142,10 @@ object GameManager {
                         }
                     }
                     if (lobbytime == 8) {
-                        if (Knockout.useQueue) JedisManager.publish(QChannels.QUEUE_MOVE.get(), Knockout.serverName)
+                        if (Knockout.useQueue) JedisManager.publish(
+                            QChannels.QUEUE_MOVE.get(),
+                            Knockout.jedis_serverName
+                        )
                     }
 
                     if (lobbytime == 2) {
@@ -173,26 +176,22 @@ object GameManager {
     /**
      * Register the Icon for the Games
      */
-
     private fun registerIcons() {
         gameIcons.add(Games("Anvilrain", "anvilrain", itemStack(Material.ANVIL) {}))
-        gameIcons.add(Games("Firefly", "firefly", itemStack(Material.ORANGE_WOOL) {}))
-        gameIcons.add(
-            Games(
-                "Knockback FFA",
-                "kbffa",
-                itemStack(Material.STICK) { addUnsafeEnchantment(Enchantment.KNOCKBACK, 1) })
-        )
+//        gameIcons.add(Games("Firefly", "firefly", itemStack(Material.ORANGE_WOOL) {}))
+//        gameIcons.add(Games("Knockback FFA","kbffa",itemStack(Material.STICK) { addUnsafeEnchantment(Enchantment.KNOCKBACK, 1) }))
         gameIcons.add(Games("OITC", "oitc", itemStack(Material.ARROW) {}))
         gameIcons.add(Games("Rainbowrun", "rainbowrun", itemStack(Material.PINK_STAINED_GLASS) {}))
-        gameIcons.add(Games("Survivalgames", "sg", itemStack(Material.CHEST) {}))
-        gameIcons.add(Games("Spleef", "spleef", itemStack(Material.GOLDEN_SHOVEL) {}))
-        gameIcons.add(Games("TNTRun", "tntrun", itemStack(Material.TNT) {}))
+        gameIcons.add(Games("Survival Games", "sg", itemStack(Material.CHEST) {}))
+//        gameIcons.add(Games("Spleef", "spleef", itemStack(Material.GOLDEN_SHOVEL) {}))
+//        gameIcons.add(Games("TNTRun", "tntrun", itemStack(Material.TNT) {}))
         gameIcons.add(Games("King of the Hill", "koth", itemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {}))
         gameIcons.add(Games("Minefield", "minefield", itemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {}))
-        gameIcons.add(Games("Riptide", "riptide", itemStack(Material.TRIDENT) {}))
-        gameIcons.add(Games("Snowfight", "snowfight", itemStack(Material.SNOWBALL) {}))
+//        gameIcons.add(Games("Riptide", "riptide", itemStack(Material.TRIDENT) {}))
+//        gameIcons.add(Games("Snowfight", "snowfight", itemStack(Material.SNOWBALL) {}))
         gameIcons.add(Games("Redlights", "redlights", itemStack(Material.RED_WOOL) {}))
+        gameIcons.add(Games("Molecraft", "molecraft", itemStack(Material.DIRT) {}))
+        gameIcons.add(Games("Hot Potato", "hotpotato", itemStack(Material.POTATO) {}))
 
         gameIcons.sortBy { it.name }
 
@@ -305,7 +304,7 @@ object GameManager {
             }.execute()
 
             task(delay = (Knockout.restartTime * 20).toLong()) {
-                onlinePlayers.forEach { PluginMessageConnect(Knockout.lobbyServerName).sendWithPlayer(it) }
+                onlinePlayers.forEach { PluginMessageConnect(Knockout.jedis_lobbyServerName).sendWithPlayer(it) }
                 server.spigot().restart()
             }
         }

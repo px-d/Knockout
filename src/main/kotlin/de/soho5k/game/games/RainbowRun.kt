@@ -34,11 +34,11 @@ class RainbowRun : GameSchematic(
 ) {
     private val placement = PointDistributor()
 
-    private val borderT = config.getOrSet("border_top", Location(spawn.world, 3.0, 72.0, 22.0)) as Location
-    private val borderB = config.getOrSet("border_bot", Location(spawn.world, 3.0, 70.0, -22.0)) as Location
+    private val borderT = setConfig("border_top", Location(spawn.world, 3.0, 72.0, 22.0)) as Location
+    private val borderB = setConfig("border_bot", Location(spawn.world, 3.0, 70.0, -22.0)) as Location
 
     override fun onStart() {
-        barrier(borderB, borderT, Material.WHITE_STAINED_GLASS_PANE, Material.AIR)
+        barrier(borderB, borderT, Material.WHITE_STAINED_GLASS, Material.AIR)
         addEvent(listen<PlayerMoveEvent> {
             if (it.player.isInWater && it.player.mode == PlayerMode.PLAY) {
                 placement.addPlayer(it.player)

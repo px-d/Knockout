@@ -16,10 +16,7 @@ import org.bukkit.Material
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
-import org.bukkit.event.entity.EntityChangeBlockEvent
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.entity.*
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import kotlin.random.Random
@@ -32,7 +29,7 @@ class AnvilRain : GameSchematic(
     10
 ) {
 
-    var rate = 100
+    var rate = 200
 
     private val spawnLoc = spawn
     private val pointDistributor = PointDistributor()
@@ -69,8 +66,12 @@ class AnvilRain : GameSchematic(
         })
         addEvent(listen<EntityDamageByEntityEvent> {
             if (it.entity is Player && it.damager is Player) {
-                it.isCancelled = true
+                it.damage = 0.0
             }
+        })
+
+        addEvent(listen<FoodLevelChangeEvent> {
+            it.isCancelled = true
         })
         addEvent(listen<BlockBreakEvent> {
             it.isCancelled = it.player.gameMode != GameMode.CREATIVE

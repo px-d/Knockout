@@ -97,12 +97,13 @@ object PlayerManager {
         updateTablists()
         RankingManager.updateRankings()
 
-        if (GameManager.inLobby && !GameManager.gameStarted && GameManager.lobbytime > 10) {
+        if (GameManager.inLobby && !GameManager.gameStarted && GameManager.lobbytime > 10 && Knockout.useQueue) {
             player.inventory.setItem(4, queueItem)
         }
     }
 
     fun unregisterPlayer(player: Player) {
+        RankingManager.updateRankings()
         if (player.mode == PlayerMode.QUEUE) {
             Knockout.team.removeEntry(player.name)
             player.deleteBoard()
@@ -158,20 +159,23 @@ object PlayerManager {
     }
 
     private fun checkTime() {
-        when (players.values.filter { it.mode == PlayerMode.PLAY || it.mode == PlayerMode.QUEUE }.size) {
-            in 0..4 -> {
+        val x = players.values.filter { it.mode == PlayerMode.PLAY || it.mode == PlayerMode.QUEUE }.size
+        when (x) {
+            in 0 until ConfigManager.minPlayers -> {
+            }
+            in ConfigManager.minPlayers..ConfigManager.minPlayers + 5 -> {
                 if (GameManager.lobbytime > 120) {
                     GameManager.lobbytime = 120
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
                             "MESSAGE.time_shortened",
-                            replacements = arrayOf(180.toTime())
+                            replacements = arrayOf(120.toTime())
                         )
                     }
                 }
             }
-            in 5..10 -> {
+            in ConfigManager.minPlayers + 6..ConfigManager.minPlayers + 10 -> {
                 if (GameManager.lobbytime > 100) {
                     GameManager.lobbytime = 100
                     onlinePlayers.forEach {
@@ -183,7 +187,7 @@ object PlayerManager {
                     }
                 }
             }
-            in 11..20 -> {
+            in ConfigManager.minPlayers + 11..ConfigManager.minPlayers + 20 -> {
                 if (GameManager.lobbytime > 90) {
                     GameManager.lobbytime = 90
                     onlinePlayers.forEach {
@@ -195,7 +199,7 @@ object PlayerManager {
                     }
                 }
             }
-            in 21..30 -> {
+            in ConfigManager.minPlayers + 21..ConfigManager.minPlayers + 30 -> {
                 if (GameManager.lobbytime > 45) {
                     GameManager.lobbytime = 45
                     onlinePlayers.forEach {
@@ -208,7 +212,7 @@ object PlayerManager {
                 }
             }
             else -> {
-                if (GameManager.lobbytime > 20) {
+                if (GameManager.lobbytime > 20 && x >= ConfigManager.minPlayers) {
                     GameManager.lobbytime = 20
                     onlinePlayers.forEach {
                         it.ping()

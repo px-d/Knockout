@@ -31,8 +31,9 @@ class Knockout : KSpigot() {
         lateinit var board: Scoreboard
         lateinit var team: Team
         lateinit var holoManager: HoloManager
-        lateinit var serverName: String
-        lateinit var lobbyServerName: String
+        lateinit var jedis_serverName: String
+        lateinit var jedis_lobbyServerName: String
+        lateinit var jedis_password: String
         var restartTime = 30
         var useQueue: Boolean = false
     }
@@ -50,21 +51,21 @@ class Knockout : KSpigot() {
         holoManager = HoloManager(this)
         holoManager.start()
 
-        serverName = config.getOrSet("jedis.servername", "knockout") as String
+        jedis_serverName = config.getOrSet("jedis.servername", "knockout") as String
+        jedis_lobbyServerName = config.getOrSet("jedis.lobby_name", "lobby") as String
+        jedis_password = config.getOrSet("jedis.password", "") as String
         useQueue = config.getOrSet("jedis.useQueue", false) as Boolean
-        lobbyServerName = config.getOrSet("lobby.name", "lobby") as String
-        restartTime = config.getOrSet("lobby.restart_time", 30) as Int
+        restartTime = config.getOrSet("restart_time", 30) as Int
 
         ConfigManager.enable()
         PlayerManager.enable()
         GameManager.enable()
+        GeneralEvents.enable()
 
         /**
          * Server Queue
          */
         if (useQueue) initJedis()
-
-        GeneralEvents.enable()
 
         for (i in Bukkit.getOnlinePlayers()) {
             PlayerManager.registerPlayer(i)
@@ -92,14 +93,9 @@ class Knockout : KSpigot() {
     }
 
     private fun initJedis() {
-        val SERVER_PING = config.getOrSet("jedis.server_ping", false) as Boolean
-        val JEDIS_PASSWORD = config.getOrSet("jedis.password", "") as String
-
-        if (SERVER_PING) {
-            JedisManager.init(JEDIS_PASSWORD)
-            JedisManager.subscribe(QueueChannel(serverName), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get())
-        }
-        GameInfoProvider.enable(serverName)
+        JedisManager.init(jedis_password)
+        JedisManager.subscribe(QueueChannel(jedis_serverName), QChannels.QUEUE_JOIN.get(), QChannels.QUEUE_LEAVE.get())
+        GameInfoProvider.enable(jedis_serverName)
     }
 
 }

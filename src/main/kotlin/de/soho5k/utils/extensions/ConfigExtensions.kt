@@ -19,12 +19,9 @@ infix fun YamlConfiguration.safe(file: File) {
     save(file)
 }
 
-fun YamlConfiguration.setOrDefault(path: String, defaultValue: Any, file: File): Any? {
-    return if (isSet(path)) {
-        get(path)
-    } else {
-        set(path, defaultValue)
-        this safe file
-        defaultValue
-    }
+fun YamlConfiguration.setOrDefault(path: String, defaultValue: Any, file: File): Any {
+    if (isSet(path)) return get(path)!!
+    set(path, defaultValue)
+    this safe file
+    return defaultValue
 }

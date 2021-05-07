@@ -54,6 +54,10 @@ abstract class GameSchematic(
     fun addEvent(event: Listener) = events.add(event)
     fun addEvent(events: List<Listener>) = events.forEach { addEvent(it) }
 
+    fun setConfig(path: String, value: Any): Any {
+        return config.setOrDefault(path, value, configFile)
+    }
+
 
     /**
      * Start the Game

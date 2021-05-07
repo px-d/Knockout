@@ -3,18 +3,20 @@ package de.soho5k.game.games
 import de.soho5k.game.GameSchematic
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.player.PlayerMode
-import de.soho5k.utils.extensions.addPoints
-import de.soho5k.utils.extensions.getOrSet
-import de.soho5k.utils.extensions.mode
+import de.soho5k.utils.extensions.*
 import de.soho5k.utils.molecraftEquip
 import net.axay.kspigot.event.listen
+import net.axay.kspigot.extensions.broadcast
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerPreLoginEvent
 import kotlin.random.Random
 
 class MoleCraft :
@@ -28,12 +30,16 @@ class MoleCraft :
     ) {
 
 
-    private val top = config.getOrSet("container.top", Location(spawn.world, 30.0, 59.0, 30.0)) as Location
-    private val bot = config.getOrSet("container.top", Location(spawn.world, -30.0, 44.0, -30.0)) as Location
+    private val top = setConfig("container.top", Location(spawn.world, 30.0, 69.0, 30.0)) as Location
+    private val bot = setConfig("container.bot", Location(spawn.world, -30.0, 40.0, -30.0)) as Location
 
     override fun onStart() {
 
         val loc = barrier(bot, top, null, Material.DIRT)
+        broadcast("Size: ${loc.size}")
+
+        println(top.formatted())
+        println(bot.formatted())
 
         addEvent(listen<EntityDamageEvent> { it.isCancelled = true })
         addEvent(listen<BlockBreakEvent> {
@@ -41,14 +47,20 @@ class MoleCraft :
             it.expToDrop = 0
             val player = it.player
             when (it.block.type) {
+                Material.DIRT -> {
+                    it.isDropItems = false
+                }
                 Material.DIAMOND_ORE -> {
                     player.addPoints(1)
+                    playBlockSound(it.player)
                 }
                 Material.DIAMOND_BLOCK -> {
                     player.addPoints(2)
+                    playBlockSound(it.player)
                 }
                 Material.EMERALD_ORE -> {
                     player.addPoints(3)
+                    playBlockSound(it.player)
                 }
                 else -> it.isCancelled = true
             }
@@ -78,6 +90,10 @@ class MoleCraft :
 
     override fun onStop() {
         barrier(bot, top, null, Material.DIRT)
+    }
+
+    private fun playBlockSound(player: Player) {
+        player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_BIT, 0.5f, 2f)
     }
 
 }

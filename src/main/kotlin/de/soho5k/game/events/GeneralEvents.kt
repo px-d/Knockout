@@ -23,7 +23,7 @@ object GeneralEvents : Listener {
 
     fun enable() {
         listen<ServerListPingEvent> {
-            if (GameManager.activeGame == null) {
+            if (GameManager.inLobby && !GameManager.gameStarted) {
                 if (PlayerManager.alivePlayers + PlayerManager.queuedPlayers >= ConfigManager.minPlayers) {
                     it.motd = "&7Warmup: &c${GameManager.lobbytime.toTime()}s".tc()
                 } else {

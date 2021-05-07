@@ -61,7 +61,7 @@ class LobbyEvents : Listener {
             if (e.action == Action.RIGHT_CLICK_AIR || e.action == Action.RIGHT_CLICK_BLOCK) {
                 if (e.player.inventory.itemInMainHand.type == Material.HEART_OF_THE_SEA) {
                     PlayerManager.registerQueuePlayer(e.player.uniqueId)
-                    PluginMessageConnect(Knockout.lobbyServerName).sendWithPlayer(e.player)
+                    PluginMessageConnect(Knockout.jedis_lobbyServerName).sendWithPlayer(e.player)
                 }
             }
         }
