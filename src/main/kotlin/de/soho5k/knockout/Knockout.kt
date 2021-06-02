@@ -55,12 +55,12 @@ class Knockout : KSpigot() {
         jedis_lobbyServerName = config.getOrSet("jedis.lobby_name", "lobby") as String
         jedis_password = config.getOrSet("jedis.password", "") as String
         useQueue = config.getOrSet("jedis.useQueue", false) as Boolean
-        restartTime = config.getOrSet("restart_time", 30) as Int
+        restartTime = config.getOrSet("lobby.restart_time", 30) as Int
 
         ConfigManager.enable()
         PlayerManager.enable()
-        GameManager.enable()
         GeneralEvents.enable()
+        GameManager.enable()
 
         /**
          * Server Queue

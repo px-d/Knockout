@@ -67,7 +67,7 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
                 clickEvent.bukkitEvent.isCancelled = true
                 val clickedIcon = clickEvent.bukkitEvent.currentItem!!
                 val enabled = GameManager.isGameEnabled(element.identifier)
-                if (enabled) {
+                if (enabled && GameManager.gamePool.size > 1) {
                     GameManager.disableGame(element.identifier)
                 } else GameManager.enableGame(element.identifier)
                 if (GameManager.maxGames < GameManager.gamePool.size || GameManager.maxGames > GameManager.gamePool.size) {

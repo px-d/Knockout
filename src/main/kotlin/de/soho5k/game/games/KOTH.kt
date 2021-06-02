@@ -15,6 +15,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import kotlin.random.Random
 
 /**
  * @author Hotkeyyy
@@ -28,8 +29,6 @@ class KOTH : GameSchematic(
     grace = 10,
     broadcast = 20
 ) {
-
-
     override fun onStart() {
         addEvent(CommonEvents().allEvents())
         addEvent(
@@ -50,7 +49,7 @@ class KOTH : GameSchematic(
 
 
     override fun tick() {
-        if (time % 5 == 0) {
+        if (time % Random.nextInt(1, 6) == 0) {
             onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach {
                 if (it.player?.location?.clone()?.subtract(0.0, 1.0, 0.0)?.block?.type == Material.GOLD_BLOCK) {
                     it.addPoints(1, true)

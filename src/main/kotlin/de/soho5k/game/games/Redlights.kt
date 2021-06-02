@@ -3,6 +3,7 @@ package de.soho5k.game.games
 import de.soho5k.game.GameManager
 import de.soho5k.game.GameSchematic
 import de.soho5k.game.events.CommonEvents
+import de.soho5k.knockout.Knockout
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.PointDistributor
@@ -22,6 +23,8 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.potion.PotionEffect
+import org.bukkit.scoreboard.Team
 import kotlin.random.Random
 
 
@@ -39,7 +42,7 @@ class Redlights : GameSchematic(
     private val pointDistributor = PointDistributor()
 
     private val borderT = setConfig("border_top", Location(spawn.world, 3.0, 62.0, 19.0)) as Location
-    private val borderB =  setConfig("border_bot", Location(spawn.world, 3.0, 60.0, -19.0)) as Location
+    private val borderB = setConfig("border_bot", Location(spawn.world, 3.0, 60.0, -19.0)) as Location
 
     private val trafficLights = hashSetOf<Location>()
 
@@ -72,6 +75,9 @@ class Redlights : GameSchematic(
     }
 
     override fun onStart() {
+        Knockout.team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
+        Knockout.team.setCanSeeFriendlyInvisibles(true)
+
         barrier(borderB, borderT, Material.WHITE_STAINED_GLASS, Material.AIR)
         setWool(Material.GREEN_WOOL)
 
@@ -101,9 +107,11 @@ class Redlights : GameSchematic(
                         }
                     }
 
-                    if ((it.player.location.x != it.to?.x || it.player.location.z != it.to?.z) && isRed) {
-                        val loc = it.player.location.clone()
-                        it.player.teleport(Location(loc.world, 0.0, loc.y, loc.z, loc.yaw, loc.pitch))
+                    if (it.player.location.x > borderB.x) {
+                        if ((it.player.location.x != it.to?.x || it.player.location.z != it.to?.z) && isRed) {
+                            val loc = it.player.location.clone()
+                            it.player.teleport(Location(loc.world, 0.0, loc.y, loc.z, loc.yaw, loc.pitch))
+                        }
                     }
                 }
             }
@@ -130,7 +138,6 @@ class Redlights : GameSchematic(
             minTime--
         }
     }
-
 
     override fun onStop() {
         barrier(borderB, borderT, Material.AIR, Material.WHITE_STAINED_GLASS)

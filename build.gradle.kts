@@ -25,7 +25,7 @@ dependencies {
     compileOnly("com.onarandombox.multiversecore:Multiverse-Core:4.2.2")
     compileOnly("de.dytanic.cloudnet", "cloudnet-bridge", "3.3.0-RELEASE")
     implementation(kotlin("stdlib"))
-    implementation("net.axay", "kspigot", "1.16.26")
+    implementation("net.axay", "kspigot", "1.16.27")
     implementation("redis.clients:jedis:3.5.1")
     implementation("de.hglabor:server-queue-core:0.0.2")
 }

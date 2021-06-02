@@ -19,7 +19,7 @@ val butcherSword: ItemStack = ItemBuilder(Material.NETHERITE_SWORD).setUnbreakab
 val molecraftPick: ItemStack = ItemBuilder(Material.IRON_PICKAXE).setUnbreakable(true).build()
 val molecraftShovel: ItemStack =
     ItemBuilder(Material.IRON_SHOVEL).enchant(Enchantment.DIG_SPEED, 5).setUnbreakable(true).build()
-val kothStick: ItemStack = ItemBuilder(Material.STICK).enchant(Enchantment.KNOCKBACK, 2).build()
+val kothStick: ItemStack = ItemBuilder(Material.STICK).enchant(Enchantment.KNOCKBACK, 5).build()
 
 val hpHead = ItemBuilder(Material.TNT).name("&cHot Potato").setUnbreakable(true).build()
 val hpChest = ItemBuilder(Material.LEATHER_CHESTPLATE).armorColor(Color.RED).setUnbreakable(true).build()

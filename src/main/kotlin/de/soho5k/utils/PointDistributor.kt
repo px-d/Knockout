@@ -50,7 +50,6 @@ class PointDistributor {
      *      PER_POSITION = First in list gets 1 Point, Second 2, Third 3 and so on
      */
     fun giveRewards(mode: RewardMode = RewardMode.FIRST, points: List<Int> = listOf(5, 4, 3, 2, 1)) {
-
         when (mode) {
             RewardMode.FIRST -> {
                 addRemainingPlayers()
@@ -70,9 +69,7 @@ class PointDistributor {
             RewardMode.POSITION_THEN_X -> {
                 val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
                     .sortedBy { it.location.x }.reversed()
-                for (i in remaining) {
-                    players.add(i)
-                }
+                remaining.forEach { players.add(it)  }
                 for (i in players.reversed()) {
                     i.addPoints(players.reversed().indexOf(i) + 1)
                 }
@@ -80,25 +77,19 @@ class PointDistributor {
             RewardMode.POSITION_THEN_Y -> {
                 val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
                     .sortedBy { it.location.y }.reversed()
-                for (i in remaining) {
-                    players.add(i)
-                }
+                remaining.forEach { players.add(it)  }
                 for (i in players.reversed()) {
                     i.addPoints(players.reversed().indexOf(i) + 1)
                 }
             }
             RewardMode.POSITION_THEN_Z -> {
-                val remaining =
-                    Bukkit.getOnlinePlayers().filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
-                        .sortedBy { it.location.z }.reversed()
-                for (i in remaining) {
-                    players.add(i)
-                }
+                val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
+                    .sortedBy { it.location.z }.reversed()
+                remaining.forEach { players.add(it)  }
                 for (i in players.reversed()) {
                     i.addPoints(players.reversed().indexOf(i) + 1)
                 }
             }
-
         }
     }
 }

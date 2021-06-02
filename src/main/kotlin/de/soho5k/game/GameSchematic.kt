@@ -27,7 +27,7 @@ abstract class GameSchematic(
     var grace: Int = 0,
     private var running: Boolean = false,
     private val events: ArrayList<Listener> = arrayListOf(),
-    var multiplier: Int = 1,
+    var multiplier: Double = 1.0,
     var broadcast: Int = 10
 ) {
     /**
@@ -45,9 +45,9 @@ abstract class GameSchematic(
     val config = YamlConfiguration.loadConfiguration(configFile)
 
     init {
-        grace = config.setOrDefault("$identifier.grace", grace, configFile) as Int
-        duration = config.setOrDefault("$identifier.time", duration, configFile) as Int
-        spawn = config.setOrDefault("$identifier.spawn", spawn, configFile) as Location
+        grace = config.setOrDefault("grace", grace, configFile) as Int
+        duration = config.setOrDefault("time", duration, configFile) as Int
+        spawn = config.setOrDefault("spawn", spawn, configFile) as Location
         ConfigManager.spawns[identifier] = spawn
     }
 
@@ -78,28 +78,33 @@ abstract class GameSchematic(
         var graceperiod = grace
         preGrace()
         task(howOften = grace.toLong(), period = 20L) {
-            if (stopped) it.cancel()
-            onlinePlayers.forEach { p ->
-                p.title(
-                    "&e${p.getLocalized("SCOREBOARD.title.$id")}".tc(),
-                    if (grace > 0) "&7${".".repeat(graceperiod)}${graceperiod.toTime()}${".".repeat(graceperiod)}".tc() else "",
-                    0,
-                    21,
-                    0
-                )
+            if (stopped) {
+                it.cancel()
+                onlinePlayers.forEach { p -> p.title(" ", " ", 0, 10, 0) }
+            } else {
+                onlinePlayers.forEach { p ->
+                    p.title(
+                        "&e${p.getLocalized("SCOREBOARD.title.$id")}".tc(),
+                        if (grace > 0) "&7${".".repeat(graceperiod)}${graceperiod.toTime()}${".".repeat(graceperiod)}".tc() else "",
+                        0,
+                        21,
+                        0
+                    )
+                }
             }
             graceperiod--
         }
 
         //START THE GAME AFTER GRACE PERIOD
         task(delay = (grace * 20L), howOften = 1L) {
-            if (!stopped) {
+            if(stopped){
+                it.cancel()
+                return@task
+            }else{
                 registerAll()
                 onStart()
                 equip()
                 run()
-            } else {
-                it.cancel()
             }
         }
     }

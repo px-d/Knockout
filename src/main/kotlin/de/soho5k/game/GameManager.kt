@@ -35,7 +35,7 @@ object GameManager {
 //        KnockbackFFA(),
         KOTH(),
         Minefield(),
-        MoleCraft(),
+        OreHunt(),
         OITC(),
         RainbowRun(),
         Redlights(),
@@ -190,7 +190,7 @@ object GameManager {
 //        gameIcons.add(Games("Riptide", "riptide", itemStack(Material.TRIDENT) {}))
 //        gameIcons.add(Games("Snowfight", "snowfight", itemStack(Material.SNOWBALL) {}))
         gameIcons.add(Games("Redlights", "redlights", itemStack(Material.RED_WOOL) {}))
-        gameIcons.add(Games("Molecraft", "molecraft", itemStack(Material.DIRT) {}))
+        gameIcons.add(Games("Ore Hunt", "orehunt", itemStack(Material.DIRT) {}))
         gameIcons.add(Games("Hot Potato", "hotpotato", itemStack(Material.POTATO) {}))
 
         gameIcons.sortBy { it.name }
@@ -218,7 +218,7 @@ object GameManager {
                 "kbffa" -> gamePool.add(KnockbackFFA())
                 "koth" -> gamePool.add(KOTH())
                 "minefield" -> gamePool.add(Minefield())
-                "molecraft" -> gamePool.add(MoleCraft())
+                "orehunt" -> gamePool.add(OreHunt())
                 "oitc" -> gamePool.add(OITC())
                 "rainbowrun" -> gamePool.add(RainbowRun())
                 "redlights" -> gamePool.add(Redlights())

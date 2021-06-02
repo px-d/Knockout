@@ -17,6 +17,7 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.potion.PotionEffect
@@ -71,6 +72,9 @@ class Minefield :
                     }
                 })
         )
+        addEvent(listen<EntityDamageByEntityEvent> {
+            if (it.entity is Player && it.damager is Player) it.isCancelled = true
+        })
     }
 
     override fun preGrace() {

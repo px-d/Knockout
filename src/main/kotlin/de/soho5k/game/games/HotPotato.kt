@@ -32,7 +32,7 @@ import kotlin.math.ceil
 import kotlin.random.Random
 
 class HotPotato :
-    GameSchematic("Hot Potato", "hotpotato", Location(Bukkit.getWorld("hotpotato"), 0.5, 70.0, 0.5), 300, 10) {
+    GameSchematic("Hot Potato", "hotpotato", Location(Bukkit.getWorld("hotpotato"), 0.5, 70.0, 0.5), 240, 10) {
 
     val players = hashMapOf<Player, Boolean>()
 
@@ -54,20 +54,39 @@ class HotPotato :
             }
         }
 
+    init {
+        spawn.world?.worldBorder?.size = 100.0
+    }
+
+    private fun potatoAmount(): Int {
+        return ceil(onlinePlayers.filter { it.mode == PlayerMode.PLAY }.size * 1.0 / 4.0).toInt()
+    }
+
     override fun onStart() {
+
         //All Events
         addEvent(CommonEvents().allEvents())
         addEvent(listen<EntityDamageEvent> {
             if (it.cause == EntityDamageEvent.DamageCause.FALL) it.isCancelled = true
+            if ((it.entity as? Player)?.mode != PlayerMode.PLAY) {
+                it.isCancelled = true
+            }
+            if (it.cause == EntityDamageEvent.DamageCause.SUFFOCATION) {
+                it.isCancelled = true
+            }
         })
         addEvent(listen<EntityDamageByEntityEvent> {
             if (it.entity is Player && it.damager !is Player) it.isCancelled = true
             if (it.entity is Player && it.damager is Player) {
+                if ((it.entity as Player).mode == PlayerMode.SPECTATE || (it.damager as Player).mode == PlayerMode.SPECTATE) {
+                    it.isCancelled = true
+                    return@listen
+                }
                 it.damage = 0.0
                 val victim = it.entity as Player
                 val damager = it.damager as Player
 
-                if (damager.isPotato) {
+                if (damager.isPotato && !(it.entity as Player).isPotato) {
                     damager.isPotato = false
                     victim.isPotato = true
                 }
@@ -81,10 +100,8 @@ class HotPotato :
             it.isCancelled = it.whoClicked.gameMode != GameMode.CREATIVE
         })
 
-
         val allPlayers = Bukkit.getOnlinePlayers().filter { it.mode == PlayerMode.PLAY }
-        val potatoAmount = ceil(allPlayers.size / 7.0).toInt()
-        for (i in 0 until potatoAmount) {
+        for (i in 0 until potatoAmount()) {
             allPlayers.filter { !it.isPotato }.random().isPotato = true
         }
 
@@ -123,7 +140,7 @@ class HotPotato :
 
                     }
                 } else {
-                    players.keys.filter { player -> player.isPotato }.forEach { player ->
+                    players.keys.filter { p -> p.isPotato }.forEach { player ->
                         val firework = fireworkItemStack {
                             addEffect {
                                 repeat(1) {
@@ -151,13 +168,12 @@ class HotPotato :
             i.isPotato = false
             i.isFlying = true
         }
-        val allPlayers = Bukkit.getOnlinePlayers().filter { it.mode == PlayerMode.PLAY }
+        val allPlayers = Bukkit.getOnlinePlayers().filter { it.mode == PlayerMode.PLAY && !it.isPotato }
         if (allPlayers.size == 1) {
             stop()
             points.giveRewards(RewardMode.FIRST, listOf(10, 9, 8, 7, 6, 5))
         } else {
-            val potatoAmount = ceil(allPlayers.size / 7.0).toInt()
-            for (i in 0 until potatoAmount) {
+            for (i in 0 until potatoAmount()) {
                 allPlayers.filter { !it.isPotato }.random().isPotato = true
             }
         }

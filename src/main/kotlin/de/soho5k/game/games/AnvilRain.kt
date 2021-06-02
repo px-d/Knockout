@@ -9,10 +9,7 @@ import de.soho5k.utils.RewardMode
 import de.soho5k.utils.extensions.mode
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.task
-import org.bukkit.Bukkit
-import org.bukkit.GameMode
-import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
@@ -34,16 +31,22 @@ class AnvilRain : GameSchematic(
     private val spawnLoc = spawn
     private val pointDistributor = PointDistributor()
 
+    private val minX = setConfig("bounds.x.min", -30) as Int
+    private val maxX = setConfig("bounds.x.max", 30) as Int
+    private val minZ = setConfig("bounds.z.min", -30) as Int
+    private val maxZ = setConfig("bounds.z.max", 30) as Int
+
+    private val y = setConfig("bounds.y", 50.0) as Double
 
     override fun tick() {
-        if (time % 2 == 0) rate += 2
+        if (time % 2 == 0) rate += 3
         task(period = 1L, howOften = rate.toLong()) {
             if (!isRunning) it.cancel()
-            val x = Random.nextInt(60) - 30
-            val z = Random.nextInt(60) - 30
+            val x = Random.nextInt(minX, maxX)
+            val z = Random.nextInt(minZ, maxZ)
 
             val f = spawnLoc.world!!.spawnFallingBlock(
-                spawnLoc.clone().add(x.toDouble(), 100.0, z.toDouble()),
+                spawnLoc.clone().add(x.toDouble(), y, z.toDouble()),
                 Material.DAMAGED_ANVIL.createBlockData()
             )
 
