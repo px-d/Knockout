@@ -7,7 +7,6 @@ import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
-import de.soho5k.utils.extensions.getOrSet
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.extensions.sendLocalizedMessage
 import net.axay.kspigot.event.listen
@@ -36,6 +35,11 @@ class RainbowRun : GameSchematic(
 
     private val borderT = setConfig("border_top", Location(spawn.world, 3.0, 72.0, 22.0)) as Location
     private val borderB = setConfig("border_bot", Location(spawn.world, 3.0, 70.0, -22.0)) as Location
+
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        player.teleport(spawn)
+    }
 
     override fun onStart() {
         barrier(borderB, borderT, Material.WHITE_STAINED_GLASS, Material.AIR)

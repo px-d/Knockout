@@ -23,7 +23,6 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.potion.PotionEffect
 import org.bukkit.scoreboard.Team
 import kotlin.random.Random
 
@@ -137,6 +136,11 @@ class Redlights : GameSchematic(
             }
             minTime--
         }
+    }
+
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        player.teleport(spawn)
     }
 
     override fun onStop() {

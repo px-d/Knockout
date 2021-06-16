@@ -20,7 +20,7 @@ object GameInfoProvider {
         println("Enabled GameInfoProvider.. Starting Task...")
         task(period = 20) {
             val phase = if (GameManager.gameStarted) "Playing: ${GameManager.activeGame.name}" else "Lobby"
-            val time = if (GameManager.gameStarted) "Running" else "${GameManager.lobbytime}"
+            val time = if (GameManager.gameStarted) "Running" else "${GameManager.lobbyTime}"
 
             val gameInfo = QGameInfo(
                 serverName,

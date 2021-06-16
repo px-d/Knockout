@@ -24,10 +24,13 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemStack
 
 object GameManager {
 
-    //List of all Minigames
+    /**
+     * List of all Minigames that CAN be drawn
+     */
     var gamePool: ArrayList<GameSchematic> = arrayListOf(
         AnvilRain(),
 //        Firefly(),
@@ -42,12 +45,12 @@ object GameManager {
 //        Riptide(),
 //        Spleef(),
         SurvivalGames(),
-//        TNTRun(),
+        TNTRun(),
 //        Snowfight()
     )
 
     /**
-     * List of selected Minigames for this Game
+     * List of selected Minigames that HAVE been drawn for this session
      */
     val activeGames: ArrayList<GameSchematic> = arrayListOf()
 
@@ -74,7 +77,7 @@ object GameManager {
     /**
      *  Time Players have to wait in Lobby (will ich noch abhängig von Spielerzahl machen)
      */
-    var lobbytime: Int = ConfigManager.lobbytime
+    var lobbyTime: Int = ConfigManager.lobbytime
 
     /**
      *  The max value of games
@@ -84,7 +87,6 @@ object GameManager {
     /**
      *  Icon-List for Settings-GUI
      */
-
     val gameIcons: ArrayList<Games> = arrayListOf()
 
     /**
@@ -104,12 +106,12 @@ object GameManager {
      */
     private fun tick() {
         task(period = 20) {
-            if (PlayerManager.alivePlayers + PlayerManager.spectatingPlayer == 1 && gameStarted) {
+            if ((PlayerManager.alivePlayers + PlayerManager.spectatingPlayer == 1 || onlinePlayers.size == 1) && gameStarted) {
                 wrapUpGame()
                 it.cancel()
             }
             if (PlayerManager.alivePlayers + PlayerManager.queuedPlayers >= ConfigManager.minPlayers && !gameStarted) {
-                if (lobbytime == 0) {
+                if (lobbyTime == 0) {
                     gameStarted = true
                     inLobby = false
                     for (i in 0 until maxGames) {
@@ -125,35 +127,35 @@ object GameManager {
                     BukkitCloudNetHelper.changeToIngame()
                     activeGame.start()
                 } else {
-                    if (lobbytime.shouldBroadcast(10)) {
+                    if (lobbyTime.shouldBroadcast(10)) {
                         for (i in PlayerManager.players.values) {
                             i.player?.sendLocalizedMessage(
                                 "MESSAGES.game.starting",
-                                replacements = arrayOf(lobbytime.toTime())
+                                replacements = arrayOf(lobbyTime.toTime())
                             )
                             i.player?.ping()
                         }
                     }
                     PlayerManager.refreshAllBoards()
-                    lobbytime--
-                    if (lobbytime == 9) {
+                    lobbyTime--
+                    if (lobbyTime == 9) {
                         onlinePlayers.forEach { p ->
                             p.clearInv()
                         }
                     }
-                    if (lobbytime == 8) {
+                    if (lobbyTime == 8) {
                         if (Knockout.useQueue) JedisManager.publish(
                             QChannels.QUEUE_MOVE.get(),
                             Knockout.jedis_serverName
                         )
                     }
 
-                    if (lobbytime == 2) {
+                    if (lobbyTime == 2) {
                         onlinePlayers.forEach { p -> p.mode = PlayerMode.PLAY }
                     }
                 }
             } else {
-                lobbytime = ConfigManager.lobbytime
+                lobbyTime = ConfigManager.lobbytime
                 PlayerManager.refreshAllBoards()
             }
         }
@@ -177,21 +179,96 @@ object GameManager {
      * Register the Icon for the Games
      */
     private fun registerIcons() {
-        gameIcons.add(Games("Anvilrain", "anvilrain", itemStack(Material.ANVIL) {}))
+        gameIcons.add(
+            Games(
+                "Anvilrain",
+                "anvilrain",
+                ItemStack(Material.ANVIL),
+                arrayListOf("", "&7Players need to survive", "&7anvils falling down from", "&7the sky."),
+                "Medium"
+            )
+        )
 //        gameIcons.add(Games("Firefly", "firefly", itemStack(Material.ORANGE_WOOL) {}))
 //        gameIcons.add(Games("Knockback FFA","kbffa",itemStack(Material.STICK) { addUnsafeEnchantment(Enchantment.KNOCKBACK, 1) }))
-        gameIcons.add(Games("OITC", "oitc", itemStack(Material.ARROW) {}))
-        gameIcons.add(Games("Rainbowrun", "rainbowrun", itemStack(Material.PINK_STAINED_GLASS) {}))
-        gameIcons.add(Games("Survival Games", "sg", itemStack(Material.CHEST) {}))
+        gameIcons.add(
+            Games(
+                "OITC",
+                "oitc",
+                ItemStack(Material.ARROW),
+                arrayListOf(
+                    "",
+                    "&7Players need to kill others",
+                    "&7with their bow.",
+                    "&7Killing a player rewards",
+                    "&7you with an arrow."
+                ),
+                "Medium"
+            )
+        )
+        gameIcons.add(
+            Games(
+                "Rainbowrun",
+                "rainbowrun",
+                itemStack(Material.PINK_STAINED_GLASS) {},
+                arrayListOf("", "&7Players need to complete ", "&7a Jump and Run"),
+                "Short"
+            )
+        )
+        gameIcons.add(
+            Games(
+                "Survival Games",
+                "sg",
+                itemStack(Material.CHEST) {},
+                arrayListOf("", "&7Last Man Standing wins"),
+                "Long"
+            )
+        )
+        gameIcons.add(
+            Games(
+                "TNTRun",
+                "tntrun",
+                itemStack(Material.TNT) {},
+                arrayListOf("", "&7Run while the floor", "&7Starts to disappear"),
+                "Depends on Player Count (Long)"
+            )
+        )
+        gameIcons.add(
+            Games(
+                "King of the Hill", "koth", itemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {},
+                arrayListOf("", "&7Earn points by standing", "&7on the Gold-Blocks"), "Short"
+            )
+        )
+        gameIcons.add(
+            Games(
+                "Minefield",
+                "minefield",
+                itemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {},
+                arrayListOf("", "&7Get to the End but", "&7avoid the iron", "&7pressure plate"),
+                "Short"
+            )
+        )
+        gameIcons.add(
+            Games(
+                "Redlights",
+                "redlights",
+                itemStack(Material.RED_WOOL) {},
+                arrayListOf("", "&7Get to the end but", "&7don't walk on red"),
+                "Short"
+            )
+        )
+        gameIcons.add(
+            Games(
+                "Ore Hunt",
+                "orehunt",
+                itemStack(Material.DIRT) {},
+                arrayListOf("", "&7Mine down in the dirt", "&7and mine ores for points"),
+                "Short"
+            )
+        )
+        gameIcons.add(Games("Hot Potato", "hotpotato", itemStack(Material.POTATO) {}))
 //        gameIcons.add(Games("Spleef", "spleef", itemStack(Material.GOLDEN_SHOVEL) {}))
-//        gameIcons.add(Games("TNTRun", "tntrun", itemStack(Material.TNT) {}))
-        gameIcons.add(Games("King of the Hill", "koth", itemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {}))
-        gameIcons.add(Games("Minefield", "minefield", itemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE) {}))
 //        gameIcons.add(Games("Riptide", "riptide", itemStack(Material.TRIDENT) {}))
 //        gameIcons.add(Games("Snowfight", "snowfight", itemStack(Material.SNOWBALL) {}))
-        gameIcons.add(Games("Redlights", "redlights", itemStack(Material.RED_WOOL) {}))
-        gameIcons.add(Games("Ore Hunt", "orehunt", itemStack(Material.DIRT) {}))
-        gameIcons.add(Games("Hot Potato", "hotpotato", itemStack(Material.POTATO) {}))
 
         gameIcons.sortBy { it.name }
 

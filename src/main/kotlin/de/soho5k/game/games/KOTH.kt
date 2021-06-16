@@ -12,6 +12,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -29,6 +30,11 @@ class KOTH : GameSchematic(
     grace = 10,
     broadcast = 20
 ) {
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        player.kothEquip()
+        player.teleport(spawn)
+    }
     override fun onStart() {
         addEvent(CommonEvents().allEvents())
         addEvent(

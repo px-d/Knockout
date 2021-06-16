@@ -35,7 +35,17 @@ class Snowfight : GameSchematic(
     private val spawns = ConfigManager.getSpawns("snowfight")
 
     override fun equip() {
-        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach { it.snowFightEquip() }
+        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach { equipPlayer(it) }
+    }
+
+    override fun equipPlayer(player: Player) {
+        player.snowFightEquip()
+    }
+
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        equipPlayer(player)
+        player.teleport(spawns.random())
     }
 
     override fun onStart() {

@@ -9,6 +9,7 @@ import de.soho5k.utils.Localization.getLocalized
 import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
 import de.soho5k.utils.clearInv
+import de.soho5k.utils.extensions.isSpectating
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.extensions.tc
 import de.soho5k.utils.extensions.timeBombSound
@@ -32,7 +33,7 @@ import kotlin.math.ceil
 import kotlin.random.Random
 
 class HotPotato :
-    GameSchematic("Hot Potato", "hotpotato", Location(Bukkit.getWorld("hotpotato"), 0.5, 70.0, 0.5), 240, 10) {
+    GameSchematic("Hot Potato", "hotpotato", Location(Bukkit.getWorld("hotpotato"), 0.5, 70.0, 0.5), 180, 10) {
 
     val players = hashMapOf<Player, Boolean>()
 
@@ -63,7 +64,6 @@ class HotPotato :
     }
 
     override fun onStart() {
-
         //All Events
         addEvent(CommonEvents().allEvents())
         addEvent(listen<EntityDamageEvent> {
@@ -78,7 +78,7 @@ class HotPotato :
         addEvent(listen<EntityDamageByEntityEvent> {
             if (it.entity is Player && it.damager !is Player) it.isCancelled = true
             if (it.entity is Player && it.damager is Player) {
-                if ((it.entity as Player).mode == PlayerMode.SPECTATE || (it.damager as Player).mode == PlayerMode.SPECTATE) {
+                if ((it.entity as Player).isSpectating || (it.damager as Player).isSpectating) {
                     it.isCancelled = true
                     return@listen
                 }
@@ -108,12 +108,18 @@ class HotPotato :
         activateBoom()
     }
 
+    override fun onRejoin(player: Player) {
+        PlayerManager.setToSpectator(player, PlayerMode.LEFT)
+        player.isFlying = true
+        player.teleport(spawn.clone().add(0.0, 20.0, 0.0))
+    }
+
     private fun activateBoom() {
-        var crash = Random.nextInt(15) + 15
+        var crash = Random.nextInt(10) + 10
         task(period = 20) {
             if (GameManager.inLobby) it.cancel()
             if (crash == 0) {
-                crash = Random.nextInt(15) + 15
+                crash = Random.nextInt(10) + 10
                 explode()
             } else {
                 crash--
@@ -149,7 +155,6 @@ class HotPotato :
                                 with(FireworkEffect.Type.BALL)
                             }
                             power = 1
-
                         }
                         val fr = player.world.spawn(player.location.clone().add(0.0, 0.3, 0.0), Firework::class.java)
                         fr.fireworkMeta = firework.itemMeta as FireworkMeta
@@ -171,10 +176,10 @@ class HotPotato :
         val allPlayers = Bukkit.getOnlinePlayers().filter { it.mode == PlayerMode.PLAY && !it.isPotato }
         if (allPlayers.size == 1) {
             stop()
-            points.giveRewards(RewardMode.FIRST, listOf(10, 9, 8, 7, 6, 5))
+            points.giveRewards(RewardMode.FIRST_TO_LAST, listOf(10, 9, 8, 7, 6, 5))
         } else {
             for (i in 0 until potatoAmount()) {
-                allPlayers.filter { !it.isPotato }.random().isPotato = true
+                allPlayers.filter { !it.isPotato && it.mode == PlayerMode.PLAY }.random().isPotato = true
             }
         }
     }

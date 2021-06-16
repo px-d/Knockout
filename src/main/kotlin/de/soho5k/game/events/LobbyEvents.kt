@@ -45,7 +45,9 @@ class LobbyEvents : Listener {
     @EventHandler
     fun interact(e: PlayerInteractEvent) {
         if (e.player.gameMode == GameMode.SURVIVAL || e.player.gameMode == GameMode.ADVENTURE) {
-            e.isCancelled = true
+            if (e.player.inventory.itemInMainHand.type != Material.WRITTEN_BOOK) {
+                e.isCancelled = true
+            }
             if (e.action == Action.PHYSICAL) {
                 if (e.clickedBlock?.type == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
                     e.player.velocity = e.player.location.direction.multiply(2.0).setY(0.9)

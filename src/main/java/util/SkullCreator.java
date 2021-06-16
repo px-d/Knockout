@@ -32,6 +32,7 @@ public class SkullCreator {
     private static Field blockProfileField;
     private static Method metaSetProfileMethod;
     private static Field metaProfileField;
+
     private SkullCreator() {
     }
 

@@ -9,6 +9,7 @@ import de.soho5k.utils.extensions.*
 import de.soho5k.utils.oitcEquip
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.heal
+import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.*
 import org.bukkit.entity.Arrow
@@ -31,6 +32,23 @@ class OITC : GameSchematic(
     broadcast = 20
 ) {
     private val spawns = ConfigManager.getSpawns("oitc")
+
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        player.teleport(spawn)
+        equipPlayer(player)
+    }
+
+    override fun equip() {
+        for (i in onlinePlayers.filter { it.mode == PlayerMode.PLAY }) {
+            equipPlayer(i)
+        }
+    }
+
+    override fun equipPlayer(player: Player) {
+
+        player.oitcEquip()
+    }
 
     override fun onStart() {
         spawn.world?.setGameRule(GameRule.KEEP_INVENTORY, true)
@@ -93,7 +111,7 @@ class OITC : GameSchematic(
         } else {
             from.killSound()
             from.addPotionEffect(PotionEffect(PotionEffectType.GLOWING, 100, 1, true, false, false))
-            from.addPoints(3)
+            from.addPoints(1)
             from.inventory.addItem(ItemStack(Material.ARROW))
             from.heal()
         }
@@ -113,6 +131,6 @@ class OITC : GameSchematic(
         player.spigot().respawn()
         player.teleport(spawns.random().clone().add(0.0, 0.4, 0.0))
         player.heal()
-        player.oitcEquip()
+        equipPlayer(player)
     }
 }

@@ -73,16 +73,22 @@ object PlayerManager {
         Knockout.team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS)
         Knockout.team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.ALWAYS)
         Knockout.team.setCanSeeFriendlyInvisibles(false)
+        updateTab()
     }
 
     fun registerPlayer(player: Player) {
-        checkTime()
-        players[player.uniqueId] = KnockoutPlayer(player.uniqueId, player.name)
+        if (!players.containsKey(player.uniqueId)) {
+            players[player.uniqueId] = KnockoutPlayer(player.uniqueId, player.name)
+            player.mode = PlayerMode.PLAY
+        }
+        if (!GameManager.gameStarted) checkTime()
         player.board = FastBoard(player)
         player.updateBoardTitle("&b&l${player.getLocalized("SCOREBOARD.lobby.title")}")
 
-        task(delay = 5L, howOften = 1L) {
+        task(delay = 2L, howOften = 1L) {
             player.teleport(ConfigManager.lobbyLoc)
+            updateTab()
+            RankingManager.updateRankings()
         }
         player.lobbyEquip()
         player.flySpeed = .1F
@@ -94,10 +100,7 @@ object PlayerManager {
         for (i in player.activePotionEffects) {
             player.removePotionEffect(i.type)
         }
-        updateTablists()
-        RankingManager.updateRankings()
-
-        if (GameManager.inLobby && !GameManager.gameStarted && GameManager.lobbytime > 10 && Knockout.useQueue) {
+        if (GameManager.inLobby && !GameManager.gameStarted && GameManager.lobbyTime > 10 && Knockout.useQueue) {
             player.inventory.setItem(4, queueItem)
         }
     }
@@ -127,17 +130,24 @@ object PlayerManager {
     }
 
 
-    fun setToSpectator(player: Player) {
+    fun setToSpectator(player: Player, mode: PlayerMode = PlayerMode.SPECTATE) {
         player.walkSpeed = 0.2f
-        player.mode = PlayerMode.SPECTATE
+        player.mode = mode
         player.inventory.clear()
         player.allowFlight = true
         player.isCollidable = false
         player.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false, false))
-        for (i in Bukkit.getOnlinePlayers()) i.hidePlayer(Knockout.INSTANCE, player)
+        for (i in onlinePlayers) {
+            if (i.mode == PlayerMode.PLAY) {
+                i.hidePlayer(Knockout.INSTANCE, player)
+            } else {
+                i.showPlayer(Knockout.INSTANCE, player)
+            }
+        }
+        updateTab()
     }
 
-    fun removeFromSpectator(player: Player) {
+    private fun removeFromSpectator(player: Player) {
         player.mode = PlayerMode.PLAY
         player.inventory.clear()
         player.allowFlight = false
@@ -146,9 +156,13 @@ object PlayerManager {
         for (i in Bukkit.getOnlinePlayers()) i.showPlayer(Knockout.INSTANCE, player)
     }
 
-    fun updateTablists() {
+    fun updateTab() {
         for (i in players.values) {
-            i.player?.setPlayerListName(" &b${i.points} &r${i.player?.name}".tc())
+            if (i.mode == PlayerMode.SPECTATE || i.mode == PlayerMode.LEFT) {
+                i.player?.setPlayerListName(" &b${i.points} &7${i.player?.name}".tc())
+            } else {
+                i.player?.setPlayerListName(" &b${i.points} &r${i.player?.name}".tc())
+            }
         }
     }
 
@@ -159,13 +173,15 @@ object PlayerManager {
     }
 
     private fun checkTime() {
-        val x = players.values.filter { it.mode == PlayerMode.PLAY || it.mode == PlayerMode.QUEUE }.size
-        when (x) {
-            in 0 until ConfigManager.minPlayers -> {
+        val amount = onlinePlayers.filter { it.mode == PlayerMode.PLAY }.size
+        val minPlayers = ConfigManager.minPlayers
+        when (amount) {
+            in 0 until minPlayers -> {
+                GameManager.lobbyTime = ConfigManager.lobbytime
             }
-            in ConfigManager.minPlayers..ConfigManager.minPlayers + 5 -> {
-                if (GameManager.lobbytime > 120) {
-                    GameManager.lobbytime = 120
+            in minPlayers..minPlayers + 5 -> {
+                if (GameManager.lobbyTime > 120) {
+                    GameManager.lobbyTime = 120
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
@@ -175,21 +191,9 @@ object PlayerManager {
                     }
                 }
             }
-            in ConfigManager.minPlayers + 6..ConfigManager.minPlayers + 10 -> {
-                if (GameManager.lobbytime > 100) {
-                    GameManager.lobbytime = 100
-                    onlinePlayers.forEach {
-                        it.ping()
-                        it.sendLocalizedMessage(
-                            "MESSAGE.time_shortened",
-                            replacements = arrayOf(100.toTime())
-                        )
-                    }
-                }
-            }
-            in ConfigManager.minPlayers + 11..ConfigManager.minPlayers + 20 -> {
-                if (GameManager.lobbytime > 90) {
-                    GameManager.lobbytime = 90
+            in minPlayers + 6..minPlayers + 16 -> {
+                if (GameManager.lobbyTime > 90) {
+                    GameManager.lobbyTime = 90
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
@@ -199,26 +203,26 @@ object PlayerManager {
                     }
                 }
             }
-            in ConfigManager.minPlayers + 21..ConfigManager.minPlayers + 30 -> {
-                if (GameManager.lobbytime > 45) {
-                    GameManager.lobbytime = 45
+            in minPlayers + 17..minPlayers + 27 -> {
+                if (GameManager.lobbyTime > 60) {
+                    GameManager.lobbyTime = 60
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
                             "MESSAGE.time_shortened",
-                            replacements = arrayOf(45.toTime())
+                            replacements = arrayOf(60.toTime())
                         )
                     }
                 }
             }
             else -> {
-                if (GameManager.lobbytime > 20 && x >= ConfigManager.minPlayers) {
-                    GameManager.lobbytime = 20
+                if (GameManager.lobbyTime > 30) {
+                    GameManager.lobbyTime = 30
                     onlinePlayers.forEach {
                         it.ping()
                         it.sendLocalizedMessage(
                             "MESSAGE.time_shortened",
-                            replacements = arrayOf(20.toTime())
+                            replacements = arrayOf(30.toTime())
                         )
                     }
                 }

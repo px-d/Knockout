@@ -1,5 +1,7 @@
 package de.soho5k.utils
 
+import de.soho5k.game.GameManager
+import net.axay.kspigot.runnables.task
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -7,9 +9,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import util.ItemBuilder
 
-val queueItem = ItemBuilder(Material.HEART_OF_THE_SEA).name("&6Queue").build()
+val queueItem: ItemStack = ItemBuilder(Material.HEART_OF_THE_SEA).name("&6Queue").build()
 
-val kbffastick: ItemStack = ItemBuilder(Material.STICK).enchant(Enchantment.KNOCKBACK, 2).build()
+val kbFfaStick: ItemStack = ItemBuilder(Material.STICK).enchant(Enchantment.KNOCKBACK, 2).build()
 val spleefShovel: ItemStack = ItemBuilder(Material.GOLDEN_SHOVEL).setUnbreakable(true).build()
 val snowFightShovel: ItemStack =
     ItemBuilder(Material.WOODEN_SHOVEL).setUnbreakable(true).enchant(Enchantment.DIG_SPEED, 1).build()
@@ -19,7 +21,7 @@ val butcherSword: ItemStack = ItemBuilder(Material.NETHERITE_SWORD).setUnbreakab
 val molecraftPick: ItemStack = ItemBuilder(Material.IRON_PICKAXE).setUnbreakable(true).build()
 val molecraftShovel: ItemStack =
     ItemBuilder(Material.IRON_SHOVEL).enchant(Enchantment.DIG_SPEED, 5).setUnbreakable(true).build()
-val kothStick: ItemStack = ItemBuilder(Material.STICK).enchant(Enchantment.KNOCKBACK, 5).build()
+val kothStick: ItemStack = ItemBuilder(Material.STICK).enchant(Enchantment.KNOCKBACK, 4).build()
 
 val hpHead = ItemBuilder(Material.TNT).name("&cHot Potato").setUnbreakable(true).build()
 val hpChest = ItemBuilder(Material.LEATHER_CHESTPLATE).armorColor(Color.RED).setUnbreakable(true).build()
@@ -35,12 +37,17 @@ fun Player.clearInv() {
 
 fun Player.lobbyEquip() {
     inventory.clear()
+    task(delay = 2L, howOften = 1L) {
+        if (!GameManager.gameStarted) {
+            inventory.setItem(8, getPatchBook(locale))
+        }
+    }
 }
 
 fun Player.knockbackFFAEquip() {
     inventory.clear()
     inventory.heldItemSlot = 0
-    inventory.setItemInMainHand(kbffastick)
+    inventory.setItemInMainHand(kbFfaStick)
 }
 
 fun Player.spleefEquip() {
@@ -56,7 +63,7 @@ fun Player.oitcEquip() {
     inventory.setItem(2, ItemStack(Material.ARROW, 1))
 }
 
-fun Player.molecraftEquip() {
+fun Player.moleCraftEquip() {
     inventory.clear()
     inventory.setItem(0, molecraftPick)
     inventory.setItem(1, molecraftShovel)

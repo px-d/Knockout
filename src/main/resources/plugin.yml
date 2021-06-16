@@ -31,3 +31,6 @@ commands:
   spawns:
     description: Command for Admins to easily set Spawns for certain Minigames
     usage: /spawns <game> <radius> <material (default = EMERALD_BLOCK)>
+  games:
+    description: Show all Games currently in the Game-Pool
+    usage: /games

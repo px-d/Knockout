@@ -77,6 +77,12 @@ class Minefield :
         })
     }
 
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        player.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false, false))
+        player.teleport(spawn)
+    }
+
     override fun preGrace() {
         val world = spawn.world
         for (x in -29..29) {

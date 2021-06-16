@@ -23,8 +23,6 @@ object SGLoot {
     private val special_sword: ItemStack =
         ItemBuilder(Material.GOLDEN_SWORD).name("&fRelaxo-Slayer").enchant(Enchantment.FIRE_ASPECT, 1).build()
 
-    private val fns: ItemStack = ItemBuilder(Material.FLINT_AND_STEEL).damage(3).build()
-
     init {
         low_tier.add(150.0, item(Material.IRON_INGOT))
         low_tier.add(100.0, item(Material.IRON_INGOT, 2))
@@ -58,7 +56,9 @@ object SGLoot {
         low_tier.add(300.0, item(Material.WOODEN_AXE))
         low_tier.add(200.0, item(Material.STONE_AXE))
         low_tier.add(500.0, item(Material.SHIELD))
-        low_tier.add(300.0, fns)
+        low_tier.add(200.0, item(Material.FIRE_CHARGE,1))
+        low_tier.add(250.0, item(Material.FIRE_CHARGE,2))
+        low_tier.add(300.0, item(Material.FIRE_CHARGE,3))
         low_tier.add(600.0, item(Material.COMPASS, 1, "&fTracker"))
         low_tier.add(200.0, item(Material.TNT))
         low_tier.add(250.0, item(Material.CHAINMAIL_HELMET))
@@ -79,8 +79,8 @@ object SGLoot {
         low_tier.add(400.0, item(Material.ARROW, 4))
         low_tier.add(350.0, item(Material.ARROW, 6))
         low_tier.add(150.0, item(Material.COBWEB))
-        low_tier.add(200.0, item(Material.STICK))
-        low_tier.add(100.0, item(Material.STICK, 2))
+        low_tier.add(220.0, item(Material.STICK))
+        low_tier.add(120.0, item(Material.STICK, 2))
         low_tier.add(500.0, item(Material.LEATHER_HELMET))
         low_tier.add(400.0, item(Material.LEATHER_CHESTPLATE))
         low_tier.add(400.0, item(Material.LEATHER_LEGGINGS))

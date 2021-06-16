@@ -44,7 +44,12 @@ class Spleef :
 
 
     override fun equip() {
-        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach { it.spleefEquip() }
+        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach {equipPlayer(it) }
+    }
+
+    override fun equipPlayer(player: Player) {
+        PlayerManager.setToSpectator(player, PlayerMode.LEFT)
+        player.teleport(spawn.clone().add(0.0,15.0,0.0))
     }
 
     override fun onStart() {

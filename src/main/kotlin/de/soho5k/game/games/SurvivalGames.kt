@@ -9,27 +9,20 @@ import de.soho5k.utils.PointDistributor
 import de.soho5k.utils.RewardMode
 import de.soho5k.utils.SGLoot
 import de.soho5k.utils.clearInv
-import de.soho5k.utils.extensions.mode
-import de.soho5k.utils.extensions.sendLocalizedMessage
-import de.soho5k.utils.extensions.tc
-import de.soho5k.utils.extensions.toTime
+import de.soho5k.utils.extensions.*
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.getHandItem
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.*
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.TNTPrimed
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.*
-import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.event.player.PlayerPickupArrowEvent
+import org.bukkit.event.player.*
 import org.bukkit.inventory.EquipmentSlot
 import util.ItemBuilder
 import kotlin.math.floor
@@ -49,16 +42,17 @@ class SurvivalGames :
     private val spawns = ConfigManager.getSpawns("sg")
     private val pointDistributor = PointDistributor()
     private val randomTP = ItemBuilder(Material.COMPASS).name("&fRandom TP".tc()).build()
-
+    private val totalDuration = time
     var isGrace = true
 
-    private val center = Location(
-        spawn.world,
-        -2.5,
-        100.0,
-        1.5
-    )
-
+    private val center = setConfig(
+        "location.center", Location(
+            spawn.world,
+            -2.5,
+            100.0,
+            1.5
+        )
+    ) as Location
 
     override fun preGrace() {
         addEvent(listen<PlayerMoveEvent> {
@@ -83,21 +77,15 @@ class SurvivalGames :
     }
 
     override fun tick() {
-        if (time % 60 == 0 && time < 480) {
+        if (time == totalDuration - 60) {
             val border = spawn.world!!.worldBorder
-            if (border.size >= 999.0) {
-                border.setSize(400.0, 40L)
-                onlinePlayers.forEach { it.sendLocalizedMessage("MESSAGES.sg.shrink", replacements = arrayOf("400")) }
-            } else {
-                border.setSize(border.size - 50.0, 50L)
-                onlinePlayers.forEach {
-                    it.sendLocalizedMessage(
-                        "MESSAGES.sg.shrink",
-                        replacements = arrayOf("${border.size - 50}")
-                    )
-                }
+            border.setSize(50.0, (totalDuration - 120).toLong())
+            onlinePlayers.forEach {
+                it.sendLocalizedMessage(
+                    "MESSAGES.sg.shrink",
+                    replacements = arrayOf("50", (totalDuration - 60).toTime())
+                )
             }
-
         }
     }
 
@@ -116,9 +104,15 @@ class SurvivalGames :
             if (it.damager is Player) {
                 if ((it.damager as Player).mode != PlayerMode.PLAY) it.isCancelled = true
             }
+            if (it.damager is TNTPrimed) {
+                it.isCancelled = true
+            }
         })
         addEvent(listen<EntityDamageEvent> {
             if (isGrace) it.isCancelled = true
+            if ((it.entity as? Player)?.isSpectating == true) {
+                it.isCancelled = true
+            }
             if (it.entity is Player && it.cause == EntityDamageEvent.DamageCause.SUFFOCATION) {
                 it.isCancelled = true
                 it.entity.teleport(spawn)
@@ -134,9 +128,7 @@ class SurvivalGames :
                 if (it.clickedBlock?.type == Material.CHEST) it.isCancelled = true
                 return@listen
             }
-
-
-            if (it.player.mode == PlayerMode.SPECTATE) {
+            if (it.player.isSpectating) {
                 it.isCancelled = true
                 if (it.item?.type == Material.COMPASS) {
                     it.player.teleport(onlinePlayers.filter { p -> p.mode == PlayerMode.PLAY }.random().location)
@@ -169,7 +161,8 @@ class SurvivalGames :
 
                     } else if (interactItem.type == Material.COMPASS && it.hand == EquipmentSlot.HAND) {
                         val clicker = it.player
-                        val players = onlinePlayers.filter { p -> p != clicker && p.mode == PlayerMode.PLAY }
+                        val players =
+                            onlinePlayers.filter { player -> player != clicker && player.mode == PlayerMode.PLAY }
                         var nearest = players.first()
 
                         for (i in players) {
@@ -215,23 +208,22 @@ class SurvivalGames :
             }
         })
         addEvent(listen<PlayerDropItemEvent> {
-            if (it.player.mode == PlayerMode.SPECTATE) it.isCancelled = true
+            if (it.player.isSpectating) it.isCancelled = true
         })
         addEvent(listen<EntityExplodeEvent> {
             if (it.entity is TNTPrimed) {
-                val tnt = it.entity as TNTPrimed
-                val source = tnt.source
                 it.isCancelled = true
-
+                val tnt = it.entity as TNTPrimed
                 it.entity.world.spawnParticle(Particle.EXPLOSION_LARGE, it.entity.location, 1)
-                for (ent in it.entity.getNearbyEntities(4.0, 4.0, 4.0)) {
-                    if (ent is LivingEntity) {
-                        ent.damage(4.0, source)
+                for (entity in it.entity.getNearbyEntities(4.0, 4.0, 4.0)) {
+                    if (entity is Player) {
+                        if (entity.mode == PlayerMode.PLAY) {
+                            entity.damage(4.0, tnt.source)
+                        }
                     }
                 }
             }
         })
-
         addEvent(listen<PlayerDeathEvent> {
             it.keepInventory = true
             for (i in it.entity.inventory.contents) {
@@ -254,6 +246,7 @@ class SurvivalGames :
         })
         val world = spawn.world ?: throw Exception("World Not Existing")
         world.worldBorder.center = center
+        world.worldBorder.size = 400.0
 
         onlinePlayers.forEach {
             it.sendLocalizedMessage(
@@ -271,7 +264,14 @@ class SurvivalGames :
     }
 
     override fun onStop() {
-        pointDistributor.giveRewards(RewardMode.FIRST, listOf(6, 4, 2))
+        pointDistributor.giveRewards(RewardMode.FIRST_TO_LAST, listOf(6, 4, 2))
+    }
+
+    override fun onRejoin(player: Player) {
+        PlayerManager.setToSpectator(player, PlayerMode.LEFT)
+        player.teleport(spawn.clone().add(0.0, 15.0, 0.0))
+        player.inventory.clear()
+        player.inventory.addItem(randomTP)
     }
 
     private val Material.isStew: Boolean

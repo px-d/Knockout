@@ -48,7 +48,18 @@ class Riptide : GameSchematic("Riptide", "riptide", Location(Bukkit.getWorld("ri
     }
 
     override fun equip() {
-        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach { it.riptideEquip() }
+        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach { equipPlayer(it) }
+    }
+
+
+    override fun equipPlayer(player: Player) {
+        player.riptideEquip()
+    }
+
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        equipPlayer(player)
+        player.teleport(spawn)
     }
 
     override fun onStart() {

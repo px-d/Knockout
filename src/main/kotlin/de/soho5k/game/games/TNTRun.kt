@@ -39,9 +39,10 @@ class TNTRun :
     private val recentMovement = hashMapOf<UUID, Long>()
     private val pointDistributor = PointDistributor()
 
-
-    override fun onStop() {
-        blocks.forEach { it.block.type = Material.TNT }
+    override fun onRejoin(player: Player) {
+        PlayerManager.setToSpectator(player, PlayerMode.LEFT)
+        player.isFlying = true
+        player.teleport(spawn.clone().add(0.0, 20.0, 0.0))
     }
 
     override fun onStart() {
@@ -93,11 +94,14 @@ class TNTRun :
             it.isCancelled = it.entity is Player
         })
         addEvent(listen<FoodLevelChangeEvent> { it.isCancelled = true })
-
         Knockout.team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
         blocks.forEach { it.block.type = Material.TNT }
+    }
+
+    override fun onStop() {
+        blocks.forEach { it.block.type = Material.TNT }
         recentMovement.clear()
-        pointDistributor.giveRewards(RewardMode.PER_POSITION)
+        pointDistributor.giveRewards(RewardMode.FIRST_TO_LAST)
     }
 
     private fun killPlayer(player: Player) {

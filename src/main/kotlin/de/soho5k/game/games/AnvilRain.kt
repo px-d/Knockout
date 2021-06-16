@@ -9,7 +9,10 @@ import de.soho5k.utils.RewardMode
 import de.soho5k.utils.extensions.mode
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.task
-import org.bukkit.*
+import org.bukkit.Bukkit
+import org.bukkit.GameMode
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
@@ -55,6 +58,12 @@ class AnvilRain : GameSchematic(
         }
     }
 
+    override fun onRejoin(player: Player) {
+        PlayerManager.setToSpectator(player, PlayerMode.LEFT)
+        player.isFlying = true
+        player.teleport(spawn.clone().add(0.0, 15.0, 0.0))
+    }
+
     override fun onStart() {
         addEvent(listen<PlayerDeathEvent> {
             killPlayer(it.entity)
@@ -69,6 +78,10 @@ class AnvilRain : GameSchematic(
         })
         addEvent(listen<EntityDamageByEntityEvent> {
             if (it.entity is Player && it.damager is Player) {
+                if ((it.damager as Player).mode != PlayerMode.PLAY) {
+                    it.isCancelled = true
+                    return@listen
+                }
                 it.damage = 0.0
             }
         })
@@ -135,6 +148,6 @@ class AnvilRain : GameSchematic(
     }
 
     override fun onStop() {
-        pointDistributor.giveRewards(RewardMode.FIRST, listOf(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
+        pointDistributor.giveRewards(RewardMode.FIRST_TO_LAST, listOf(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
     }
 }

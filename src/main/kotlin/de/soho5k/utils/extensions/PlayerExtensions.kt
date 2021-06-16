@@ -4,6 +4,7 @@ import board.FastBoard
 import de.soho5k.game.GameManager
 import de.soho5k.game.games.AnvilRain
 import de.soho5k.knockout.managers.ConfigManager
+import de.soho5k.player.KnockoutPlayer
 import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.Localization.getLocalized
@@ -56,7 +57,7 @@ fun Player.refreshBoard() {
                     .toScoreboard(
                         PlayerManager.totalPlayers,
                         PlayerManager.alivePlayers,
-                        GameManager.lobbytime,
+                        GameManager.lobbyTime,
                         ConfigManager.maxPlayers,
                         ConfigManager.minPlayers,
                         null,
@@ -112,6 +113,8 @@ fun Player.sendLocalizedMessage(
 
 var Player.mode: PlayerMode
     get() {
+        if (!PlayerManager.players.containsKey(uniqueId)) PlayerManager.players[uniqueId] =
+            KnockoutPlayer(uniqueId, name)
         return PlayerManager.players[uniqueId]?.mode ?: throw Exception("Error retreiving Payer Mode")
     }
     set(value) {
@@ -124,8 +127,11 @@ var Player.points: Int
     }
     set(value) {
         PlayerManager.players[uniqueId]?.points = value
-        PlayerManager.updateTablists()
+        PlayerManager.updateTab()
     }
+
+val Player.isSpectating: Boolean
+    get() = mode == PlayerMode.SPECTATE || mode == PlayerMode.LEFT
 
 fun Player.addPoints(amount: Int, silent: Boolean = false) {
     points += amount

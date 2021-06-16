@@ -25,7 +25,7 @@ object GeneralEvents : Listener {
         listen<ServerListPingEvent> {
             if (GameManager.inLobby && !GameManager.gameStarted) {
                 if (PlayerManager.alivePlayers + PlayerManager.queuedPlayers >= ConfigManager.minPlayers) {
-                    it.motd = "&7Warmup: &c${GameManager.lobbytime.toTime()}s".tc()
+                    it.motd = "&7Warmup: &c${GameManager.lobbyTime.toTime()}s".tc()
                 } else {
                     it.motd = "&cWaiting...".tc()
                 }
@@ -33,19 +33,29 @@ object GeneralEvents : Listener {
                 if (GameManager.ended) {
                     it.motd = "&cGame Over!".tc()
                 } else {
-                    it.motd = "&7Current Game: &b${GameManager.activeGame.name}".tc()
+                    it.motd = "&7Current Game: &b${GameManager.activeGame?.name}".tc()
                 }
             }
         }
 
         listen<PlayerLoginEvent> {
             if (GameManager.gameStarted) {
-                it.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game is currently running.")
+                if ((it.player.hasPermission("knockout.rejoin") && PlayerManager.players.containsKey(it.player.uniqueId)) || it.player.isOp) {
+                    if (!PlayerManager.players.containsKey(it.player.uniqueId)) PlayerManager.registerPlayer(it.player)
+                    task(delay = 5L, howOften = 1L) { _ ->
+                        GameManager.activeGame.onRejoin(it.player)
+                    }
+                } else {
+                    it.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Game is currently running.")
+                }
             }
+            PlayerManager.refreshAllBoards()
         }
 
         listen<PlayerJoinEvent> {
+            PlayerManager.updateTab()
             it.joinMessage = ""
+
             PlayerManager.registerPlayer(it.player)
 
             for (i in Bukkit.getOnlinePlayers()) {
@@ -60,7 +70,16 @@ object GeneralEvents : Listener {
         }
         listen<PlayerQuitEvent> {
             it.quitMessage = ""
-            PlayerManager.unregisterPlayer(it.player)
+            if (GameManager.gameStarted) {
+                if (!it.player.hasPermission("knockout.rejoin")) {
+                    PlayerManager.unregisterPlayer(it.player)
+                } else {
+                    PlayerManager.players[it.player.uniqueId]?.mode = PlayerMode.LEFT
+                }
+            }else{
+                PlayerManager.unregisterPlayer(it.player)
+            }
+
         }
         listen<GameEndEvent> {
             PlayerManager.refreshAllBoards()
@@ -83,7 +102,7 @@ object GeneralEvents : Listener {
         listen<AsyncPlayerChatEvent> {
             it.isCancelled = true
             onlinePlayers.forEach { p ->
-                if (it.player.mode == PlayerMode.SPECTATE) {
+                if (it.player.isSpectating) {
                     p.sendMessage("&c${it.player.name} &8(&7${it.player.points}&8) $QUOTATION &7${it.message.sc()}".tc())
                 }
                 if (it.player.mode == PlayerMode.PLAY) {

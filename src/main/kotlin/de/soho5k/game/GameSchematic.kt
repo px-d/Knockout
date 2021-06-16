@@ -11,14 +11,25 @@ import net.axay.kspigot.event.unregister
 import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import java.io.File
 
+/**
+ * @param name The Name of the Game
+ * @param identifier The ID of the Game that will be used in order to find localizations and spawns
+ * @param spawn The Spawn-Location, used for some games - other use different spawns (eg. Survival Games)
+ * @param duration The duration of the game in seconds
+ * @param grace The duration _BEFORE_ the game starts
+ * @param running **DON'T CHANGE** - Signals whether the Game is currently running or not
+ * @param events List of all Events that need to be unregistered when the Game ends
+ * @param multiplier **UNUSED** Can be used for point multiplication
+ * @param broadcast Modulo of when the game should broadcast the remaining time.
+ *
+ */
 abstract class GameSchematic(
     val name: String,
     private val identifier: String,
@@ -49,6 +60,13 @@ abstract class GameSchematic(
         duration = config.setOrDefault("time", duration, configFile) as Int
         spawn = config.setOrDefault("spawn", spawn, configFile) as Location
         ConfigManager.spawns[identifier] = spawn
+
+        spawn.world?.difficulty = Difficulty.NORMAL
+
+        spawn.world?.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
+        spawn.world?.setGameRule(GameRule.SHOW_DEATH_MESSAGES, false)
+        spawn.world?.setGameRule(GameRule.DO_WEATHER_CYCLE, false)
+        spawn.world?.setGameRule(GameRule.DO_INSOMNIA, false)
     }
 
     fun addEvent(event: Listener) = events.add(event)
@@ -97,10 +115,10 @@ abstract class GameSchematic(
 
         //START THE GAME AFTER GRACE PERIOD
         task(delay = (grace * 20L), howOften = 1L) {
-            if(stopped){
+            if (stopped) {
                 it.cancel()
                 return@task
-            }else{
+            } else {
                 registerAll()
                 onStart()
                 equip()
@@ -176,6 +194,18 @@ abstract class GameSchematic(
     open fun equip() {}
 
     /**
+     * Function used to equip a Single Player in case
+     * he is rejoining
+     */
+    open fun equipPlayer(player: Player) {}
+
+    /**
+     * Function that handles what should happen if
+     * a Player who disconnected, rejoined the game.
+     */
+    open fun onRejoin(player: Player) {}
+
+    /**
      * Function that is being called every tick.
      */
     open fun tick() {}
@@ -219,4 +249,5 @@ abstract class GameSchematic(
         }
         return locations
     }
+
 }

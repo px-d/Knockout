@@ -1,6 +1,8 @@
 package de.soho5k.commands
 
 import de.soho5k.game.GameManager
+import de.soho5k.utils.extensions.sendLocalizedMessage
+import de.soho5k.utils.extensions.tc
 import net.axay.kspigot.gui.GUIType
 import net.axay.kspigot.gui.Slots
 import net.axay.kspigot.gui.kSpigotGUI
@@ -19,9 +21,16 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
+import util.ItemBuilder
 
 
-data class Games(val name: String, val identifier: String, val icon: ItemStack)
+data class Games(
+    val name: String,
+    val identifier: String,
+    val icon: ItemStack,
+    val description: ArrayList<String> = arrayListOf(""),
+    val length: String = "Short"
+)
 
 var gameCount = 0
 
@@ -60,7 +69,7 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
             Slots.RowFiveSlotEight,
 
             iconGenerator = {
-                updateIcon(it.icon, it.identifier)
+                updateIcon(it.icon, it.identifier, it.name, it.description, it.length)
                 it.icon
             },
             onClick = { clickEvent, element ->
@@ -74,7 +83,7 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
                     GameManager.maxGames = GameManager.gamePool.size
                 }
 
-                updateIcon(clickedIcon, element.identifier)
+                updateIcon(clickedIcon, element.identifier, element.name, element.description, element.length)
                 clickEvent.guiInstance[Slots.RowSixSlotOne] = createMaxGamesChooser()
             }
         )
@@ -89,14 +98,21 @@ val gui = kSpigotGUI(GUIType.SIX_BY_NINE) {
     }
 }
 
-fun updateIcon(icon: ItemStack, identifier: String): ItemStack {
-    val meta = icon.itemMeta
-    meta?.setLore {
-        +" "
-        if (GameManager.isGameEnabled(identifier)) +"${ChatColor.GREEN}${ChatColor.BOLD}ENABLED" else +"${ChatColor.RED}${ChatColor.BOLD}DISABLED"
-    }
-    icon.itemMeta = meta
-    return icon
+fun updateIcon(
+    icon: ItemStack,
+    identifier: String,
+    name: String,
+    description: ArrayList<String>,
+    length: String
+): ItemStack {
+    val item = ItemBuilder(icon).name("&6${name}".tc())
+        .lore(
+            "&7Length: &9${length}",
+            *description.toTypedArray(),
+            "",
+            if (GameManager.isGameEnabled(identifier)) "${ChatColor.GREEN}${ChatColor.BOLD}ENABLED" else "${ChatColor.RED}${ChatColor.BOLD}DISABLED"
+        )
+    return item.build()
 }
 
 fun createMaxGamesChooser(): ItemStack {
@@ -107,9 +123,11 @@ fun createMaxGamesChooser(): ItemStack {
                 +" "
                 +"${ChatColor.GRAY}Selected Games: ${ChatColor.GREEN}${GameManager.gamePool.size}"
                 +"§8Total Games in the Game-Pool"
+                +"§8that COULD be drawn"
                 +" "
                 +"${ChatColor.GRAY}Max games: ${ChatColor.GREEN}${GameManager.maxGames}"
                 +"§8Amount of games to be played"
+                +"§8(drawn from the Game-Pool)"
                 +" "
                 +"${ChatColor.AQUA}Rightclick ${ChatColor.GRAY}lower"
                 +"${ChatColor.YELLOW}Leftclick ${ChatColor.GRAY}higher"
@@ -127,7 +145,11 @@ fun createMaxGamesChooser(): ItemStack {
 class GameCommand : CommandExecutor {
     override fun onCommand(sender: CommandSender, cmd: Command, label: String, args: Array<out String>): Boolean {
         if (sender !is Player) return false
-        sender.openGUI(gui)
+        if (sender.hasPermission("knockout.game")) {
+            sender.openGUI(gui)
+        } else {
+            sender.sendLocalizedMessage("TEXT.no_permission", false, ChatColor.RED)
+        }
         return true
     }
 }

@@ -16,8 +16,8 @@ class StartCommand : CommandExecutor {
 
         if (sender.hasPermission("knockout.start")) {
             if (!GameManager.gameStarted) {
-                if (GameManager.lobbytime > 10) {
-                    GameManager.lobbytime = 10
+                if (GameManager.lobbyTime > 10) {
+                    GameManager.lobbyTime = 10
                     sender.sendLocalizedMessage(
                         "MESSAGES.lobby.shortened",
                         false,
@@ -29,8 +29,6 @@ class StartCommand : CommandExecutor {
                 sender.sendLocalizedMessage("MESSAGES.lobby.already_started", false, ChatColor.RED)
             }
         }
-
         return true
     }
-
 }

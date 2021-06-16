@@ -27,7 +27,7 @@ class StaffmodeCommand : CommandExecutor {
             "MESSAGES.mode",
             replacements = arrayOf(sender.mode.toString().toLowerCase().capitalize())
         )
-        sender.sendMessage("&4This is very unstabled. I haven't implemented it correctly as of right now. Please only use sparely.".tc())
+        sender.sendMessage("&4This is very unstable. I haven't implemented it correctly as of right now. Please only use sparely.".tc())
         PlayerManager.refreshAllBoards()
         for (i in Bukkit.getOnlinePlayers()) {
             i.hidePlayer(Knockout.INSTANCE, sender)

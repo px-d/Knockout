@@ -84,6 +84,7 @@ class Knockout : KSpigot() {
         SkipCommand().register("skip")
         GameCommand().register("game")
         GenerateConfig().register("spawns")
+        GamesCommand().register("games")
 
         RankingManager.enable()
     }

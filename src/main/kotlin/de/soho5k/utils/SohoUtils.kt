@@ -10,7 +10,6 @@ const val NAME_LINK = "https://api.mojang.com/users/profiles/minecraft"
 
 object SohoUtils {
 
-
     /**
      * Get a UUID from a specific Player Name
      * (keine Ahnung ob das effizient ist oder nicht)

@@ -36,7 +36,7 @@ class PointDistributor {
      * Adds all remaining Players so no one is missing
      */
     private fun addRemainingPlayers() {
-        for (i in Bukkit.getOnlinePlayers()) {
+        for (i in onlinePlayers) {
             if (!players.contains(i) && (i.mode == PlayerMode.PLAY || i.mode == PlayerMode.SPECTATE)) {
                 players.add(i)
             }
@@ -49,9 +49,9 @@ class PointDistributor {
      *      FIRST = First to Last -> Points List must not be null (Points get Distributed after Points List)
      *      PER_POSITION = First in list gets 1 Point, Second 2, Third 3 and so on
      */
-    fun giveRewards(mode: RewardMode = RewardMode.FIRST, points: List<Int> = listOf(5, 4, 3, 2, 1)) {
+    fun giveRewards(mode: RewardMode = RewardMode.FIRST_TO_LAST, points: List<Int> = listOf(5, 4, 3, 2, 1)) {
         when (mode) {
-            RewardMode.FIRST -> {
+            RewardMode.FIRST_TO_LAST -> {
                 addRemainingPlayers()
                 val list = players.reversed()
                 for (i in list.indices) {
@@ -59,6 +59,12 @@ class PointDistributor {
                         list[i].addPoints(points[i])
                     }
                 }
+            }
+            RewardMode.LAST_TO_FIRST ->{
+                addRemainingPlayers()
+                val list = players.reversed()
+                for(i in list)
+                    i.addPoints(list.indexOf(i))
             }
             RewardMode.PER_POSITION -> {
                 addRemainingPlayers()
@@ -69,7 +75,7 @@ class PointDistributor {
             RewardMode.POSITION_THEN_X -> {
                 val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
                     .sortedBy { it.location.x }.reversed()
-                remaining.forEach { players.add(it)  }
+                remaining.forEach { players.add(it) }
                 for (i in players.reversed()) {
                     i.addPoints(players.reversed().indexOf(i) + 1)
                 }
@@ -77,7 +83,7 @@ class PointDistributor {
             RewardMode.POSITION_THEN_Y -> {
                 val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
                     .sortedBy { it.location.y }.reversed()
-                remaining.forEach { players.add(it)  }
+                remaining.forEach { players.add(it) }
                 for (i in players.reversed()) {
                     i.addPoints(players.reversed().indexOf(i) + 1)
                 }
@@ -85,7 +91,7 @@ class PointDistributor {
             RewardMode.POSITION_THEN_Z -> {
                 val remaining = onlinePlayers.filter { it.mode == PlayerMode.PLAY && !players.contains(it) }
                     .sortedBy { it.location.z }.reversed()
-                remaining.forEach { players.add(it)  }
+                remaining.forEach { players.add(it) }
                 for (i in players.reversed()) {
                     i.addPoints(players.reversed().indexOf(i) + 1)
                 }
@@ -95,5 +101,5 @@ class PointDistributor {
 }
 
 enum class RewardMode {
-    FIRST, PER_POSITION, POSITION_THEN_X, POSITION_THEN_Y, POSITION_THEN_Z
+    FIRST_TO_LAST, LAST_TO_FIRST, PER_POSITION, POSITION_THEN_X, POSITION_THEN_Y, POSITION_THEN_Z
 }

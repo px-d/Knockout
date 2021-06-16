@@ -3,8 +3,11 @@ package de.soho5k.game.games
 import de.soho5k.game.GameSchematic
 import de.soho5k.game.events.CommonEvents
 import de.soho5k.knockout.managers.ConfigManager
+import de.soho5k.player.PlayerManager
+import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.killSound
+import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.knockbackFFAEquip
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlinePlayers
@@ -16,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
+import sun.management.counter.perf.PerfLongArrayCounter
 
 class KnockbackFFA :
     GameSchematic(
@@ -34,6 +38,12 @@ class KnockbackFFA :
      * Value: Who hit the Player
      */
     private val latestHits = hashMapOf<Player, Player>()
+
+    override fun onRejoin(player: Player) {
+        player.mode = PlayerMode.PLAY
+        player.knockbackFFAEquip()
+        player.teleport(spawn)
+    }
 
     override fun onStart() {
         addEvent(listen<PlayerMoveEvent> {

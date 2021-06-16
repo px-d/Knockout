@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import java.util.*
 
 class KnockoutPlayer(
-    val uuid: UUID,
+    private val uuid: UUID,
     val name: String,
     var points: Int = 0,
     var mode: PlayerMode = PlayerMode.PLAY

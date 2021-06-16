@@ -27,16 +27,16 @@ class HoloManager(plugin: JavaPlugin) {
                     val x = "${config.get("holos.$i.location.x")}".toDouble()
                     val y = "${config.get("holos.$i.location.y")}".toDouble()
                     val z = "${config.get("holos.$i.location.z")}".toDouble()
-                    var text = "${config.get("holos.$i.text")}"
+                    val text = config.getList("holos.$i.text") as List<*>
                     val small = config.get("holos.$i.small") as Boolean
-                    text = text.replace("[", "").replace("]", "")
-                    val holo = Holo(Location(world, x, y, z), text.split(", "), small)
+                    val id = config.get("holos.$i.id") as String
+//                    text = text.replace("[", "").replace("]", "")
+                    val holo = Holo(Location(world, x, y, z), text as List<String>, small, id)
                     holos[i] = holo
                 }
             }
         }
     }
-
 
     fun end() {
         for (i in holos.values) {
@@ -67,11 +67,10 @@ class HoloManager(plugin: JavaPlugin) {
             config.set("holos.${id}.small", small)
             saveConfig()
         }
-        val holo = Holo(loc, text.asList(), small)
+        val holo = Holo(loc, text.asList(), small, id)
         holos[id] = holo
         return holo
     }
-
 
     fun getHolo(id: String): Holo {
         return holos[id] ?: throw NoHoloException()
@@ -79,6 +78,11 @@ class HoloManager(plugin: JavaPlugin) {
 
     private fun saveConfig() {
         config.save(origin)
+    }
+
+    fun deleteHolo(holo: Holo) {
+        holo.deleteAll()
+        holos.remove(holo.id)
     }
 
 

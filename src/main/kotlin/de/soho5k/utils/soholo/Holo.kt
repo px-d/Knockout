@@ -5,7 +5,7 @@ import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
 
-class Holo(private val location: Location, text: List<String>, private val small: Boolean) {
+class Holo(private val location: Location, text: List<String>, private val small: Boolean, val id: String) {
 
     val armorstands = arrayListOf<ArmorStand>()
     private var originLoc = location.clone()
@@ -28,12 +28,12 @@ class Holo(private val location: Location, text: List<String>, private val small
         }
 
         val armorStand = loc.world!!.spawnEntity(loc, EntityType.ARMOR_STAND) as ArmorStand
+        armorStand.isSmall = small
+        armorStand.isVisible = false
         armorStand.isInvulnerable = true
         armorStand.setGravity(false)
-        armorStand.isVisible = false
         armorStand.customName = ChatColor.translateAlternateColorCodes('&', text)
         armorStand.isCustomNameVisible = text.replace(" ", "").isNotEmpty()
-        armorStand.isSmall = small
         armorStand.isCollidable = false
         armorstands.add(armorStand)
     }
@@ -52,10 +52,10 @@ class Holo(private val location: Location, text: List<String>, private val small
     }
 
     fun setLine(index: Int, text: String) {
-        if (index > armorstands.size) {
-            throw IndexOutOfBoundsException("There are not that many lines in this Hologram")
+        if(index>armorstands.size) {
+            println("You want to set a Line that doesn't exist.")
+            return
         }
-
         armorstands[index].customName = ChatColor.translateAlternateColorCodes('&', text)
     }
 
