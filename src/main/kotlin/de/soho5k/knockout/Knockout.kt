@@ -14,11 +14,15 @@ import de.soho5k.player.PlayerManager
 import de.soho5k.utils.extensions.getOrSet
 import de.soho5k.utils.extensions.tc
 import de.soho5k.utils.soholo.HoloManager
+import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.kick
 import net.axay.kspigot.extensions.bukkit.register
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.main.KSpigot
 import org.bukkit.Bukkit
+import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Snowball
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.scoreboard.Scoreboard
 import org.bukkit.scoreboard.Team
 
@@ -61,7 +65,6 @@ class Knockout : KSpigot() {
         PlayerManager.enable()
         GeneralEvents.enable()
         GameManager.enable()
-
         /**
          * Server Queue
          */
@@ -99,4 +102,11 @@ class Knockout : KSpigot() {
         GameInfoProvider.enable(jedis_serverName)
     }
 
+    init {
+        listen<ProjectileHitEvent> {
+            if (it.entity is Snowball ){
+                (it.hitEntity as? LivingEntity)?.damage(0.0, (it.entity.shooter as? LivingEntity))
+            }
+        }
+    }
 }

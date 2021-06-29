@@ -114,8 +114,10 @@ class SurvivalGames :
                 it.isCancelled = true
             }
             if (it.entity is Player && it.cause == EntityDamageEvent.DamageCause.SUFFOCATION) {
-                it.isCancelled = true
-                it.entity.teleport(spawn)
+                if ((it.entity as Player).mode == PlayerMode.SPECTATE) {
+                    it.isCancelled = true
+                    it.entity.teleport(Location(spawn.world, 0.0, 100.0 ,0.0))
+                }
             }
         })
         addEvent(listen<PlayerPickupArrowEvent> {

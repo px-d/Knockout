@@ -47,7 +47,6 @@ class TNTRun :
 
     override fun onStart() {
         addEvent(listen<PlayerMoveEvent> { e ->
-            if (e.player.mode != PlayerMode.PLAY) return@listen
             if (e.player.location.y < 50) {
                 if (e.player.mode == PlayerMode.PLAY) {
                     killPlayer(e.player)
@@ -55,6 +54,7 @@ class TNTRun :
                     e.player.teleport(spawn)
                 }
             }
+            if (e.player.mode != PlayerMode.PLAY) return@listen
 
             val block1 = e.player.location.block.getRelative(BlockFace.DOWN)
             val block2 = e.player.location.block.getRelative(BlockFace.DOWN).getRelative(BlockFace.DOWN)

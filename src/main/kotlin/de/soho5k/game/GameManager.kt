@@ -41,7 +41,7 @@ object GameManager {
         OreHunt(),
         OITC(),
         RainbowRun(),
-        Redlights(),
+//        Redlights(),
 //        Riptide(),
 //        Spleef(),
         SurvivalGames(),
@@ -93,6 +93,9 @@ object GameManager {
      * Instance of all Events (for easier un-/registration)
      */
     val events = LobbyEvents()
+
+    val activeGameInit: Boolean
+        get() = this::activeGame.isInitialized
 
     fun enable() {
         println(">> Starting GameManager")

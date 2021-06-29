@@ -12,6 +12,7 @@ import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -67,6 +68,15 @@ object GeneralEvents : Listener {
             }
             it.player.exp = 0F
             it.player.level = 0
+
+            it.player.sendLocalizedMessage(
+                "MESSAGES.content_creator_intro",
+                false,
+                ChatColor.RED,
+                ChatColor.YELLOW,
+                "/game",
+                "/start"
+            )
         }
         listen<PlayerQuitEvent> {
             it.quitMessage = ""
@@ -76,7 +86,7 @@ object GeneralEvents : Listener {
                 } else {
                     PlayerManager.players[it.player.uniqueId]?.mode = PlayerMode.LEFT
                 }
-            }else{
+            } else {
                 PlayerManager.unregisterPlayer(it.player)
             }
 
