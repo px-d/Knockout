@@ -1,15 +1,11 @@
 package de.soho5k.knockout
 
 import com.onarandombox.MultiverseCore.MultiverseCore
-import de.hglabor.velocity.queue.constants.QChannels
-import de.hglabor.velocity.queue.jedis.JedisManager
 import de.soho5k.commands.*
 import de.soho5k.game.GameManager
 import de.soho5k.game.events.GeneralEvents
 import de.soho5k.knockout.managers.ConfigManager
 import de.soho5k.knockout.managers.RankingManager
-import de.soho5k.knockout.queue.GameInfoProvider
-import de.soho5k.knockout.queue.QueueChannel
 import de.soho5k.player.PlayerManager
 import de.soho5k.utils.extensions.getOrSet
 import de.soho5k.utils.extensions.tc
@@ -104,7 +100,7 @@ class Knockout : KSpigot() {
 
     init {
         listen<ProjectileHitEvent> {
-            if (it.entity is Snowball ){
+            if (it.entity is Snowball) {
                 (it.hitEntity as? LivingEntity)?.damage(0.0, (it.entity.shooter as? LivingEntity))
             }
         }

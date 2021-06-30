@@ -35,6 +35,7 @@ class KOTH : GameSchematic(
         player.kothEquip()
         player.teleport(spawn)
     }
+
     override fun onStart() {
         addEvent(CommonEvents().allEvents())
         addEvent(

@@ -10,10 +10,6 @@ import de.soho5k.utils.RewardMode
 import de.soho5k.utils.SGLoot
 import de.soho5k.utils.clearInv
 import de.soho5k.utils.extensions.*
-import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.bukkit.getHandItem
-import net.axay.kspigot.extensions.onlinePlayers
-import net.axay.kspigot.runnables.task
 import org.bukkit.*
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -116,7 +112,7 @@ class SurvivalGames :
             if (it.entity is Player && it.cause == EntityDamageEvent.DamageCause.SUFFOCATION) {
                 if ((it.entity as Player).mode == PlayerMode.SPECTATE) {
                     it.isCancelled = true
-                    it.entity.teleport(Location(spawn.world, 0.0, 100.0 ,0.0))
+                    it.entity.teleport(Location(spawn.world, 0.0, 100.0, 0.0))
                 }
             }
         })

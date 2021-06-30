@@ -8,7 +8,6 @@ import de.soho5k.utils.RewardMode
 import de.soho5k.utils.extensions.amountOf
 import de.soho5k.utils.extensions.mode
 import de.soho5k.utils.extensions.sendLocalizedMessage
-import de.soho5k.utils.spleefEquip
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.isFeetInWater
 import net.axay.kspigot.extensions.onlinePlayers
@@ -44,12 +43,12 @@ class Spleef :
 
 
     override fun equip() {
-        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach {equipPlayer(it) }
+        onlinePlayers.filter { it.mode == PlayerMode.PLAY }.forEach { equipPlayer(it) }
     }
 
     override fun equipPlayer(player: Player) {
         PlayerManager.setToSpectator(player, PlayerMode.LEFT)
-        player.teleport(spawn.clone().add(0.0,15.0,0.0))
+        player.teleport(spawn.clone().add(0.0, 15.0, 0.0))
     }
 
     override fun onStart() {

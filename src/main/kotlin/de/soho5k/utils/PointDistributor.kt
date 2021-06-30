@@ -4,7 +4,6 @@ import de.soho5k.player.PlayerMode
 import de.soho5k.utils.extensions.addPoints
 import de.soho5k.utils.extensions.mode
 import net.axay.kspigot.extensions.onlinePlayers
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 /**
@@ -60,10 +59,10 @@ class PointDistributor {
                     }
                 }
             }
-            RewardMode.LAST_TO_FIRST ->{
+            RewardMode.LAST_TO_FIRST -> {
                 addRemainingPlayers()
                 val list = players.reversed()
-                for(i in list)
+                for (i in list)
                     i.addPoints(list.indexOf(i))
             }
             RewardMode.PER_POSITION -> {

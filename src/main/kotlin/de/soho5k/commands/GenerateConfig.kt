@@ -24,7 +24,7 @@ class GenerateConfig : CommandExecutor, TabCompleter {
 
         val path = "${Knockout.INSTANCE.dataFolder}/games/${args[0]}.yml"
         val radius = args[1].toInt()
-        val material = if (args.size == 3) Material.valueOf(args[2].toUpperCase()) else Material.EMERALD_BLOCK
+        val material = if (args.size == 3) Material.valueOf(args[2].uppercase()) else Material.EMERALD_BLOCK
 
         val playerPos = sender.location
         val world = playerPos.world ?: throw Exception("World Not Existing")
@@ -96,7 +96,7 @@ class GenerateConfig : CommandExecutor, TabCompleter {
         }
         if (args.size == 3) {
             return Material.values()
-                .filter { it.toString().toLowerCase().startsWith(args[2].toLowerCase()) && it.isBlock }
+                .filter { it.toString().lowercase().startsWith(args[2].lowercase()) && it.isBlock }
                 .map { it.toString() }.toMutableList()
         }
 

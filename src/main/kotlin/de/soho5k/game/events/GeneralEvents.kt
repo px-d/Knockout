@@ -1,5 +1,6 @@
 package de.soho5k.game.events
 
+import de.soho5k.events.GameEndEvent
 import de.soho5k.game.GameManager
 import de.soho5k.knockout.Knockout
 import de.soho5k.knockout.managers.ConfigManager
@@ -7,7 +8,6 @@ import de.soho5k.player.PlayerManager
 import de.soho5k.player.PlayerMode
 import de.soho5k.utils.QUOTATION
 import de.soho5k.utils.extensions.*
-import events.GameEndEvent
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.runnables.task

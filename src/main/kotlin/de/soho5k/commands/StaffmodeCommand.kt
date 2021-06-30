@@ -12,6 +12,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.*
 
 /**
  * Haven't totally tested this feature yet, could be buggy or maybe even gambreaking.
@@ -25,7 +26,9 @@ class StaffmodeCommand : CommandExecutor {
         sender.mode = PlayerMode.STAFF
         sender.sendLocalizedMessage(
             "MESSAGES.mode",
-            replacements = arrayOf(sender.mode.toString().toLowerCase().capitalize())
+            replacements = arrayOf(
+                sender.mode.toString().lowercase()
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
         )
         sender.sendMessage("&4This is very unstable. I haven't implemented it correctly as of right now. Please only use sparely.".tc())
         PlayerManager.refreshAllBoards()

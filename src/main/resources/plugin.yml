@@ -8,6 +8,10 @@ load: POSTWORLD
 api-version: 1.16
 depend:
   - Multiverse-Core
+libraries:
+  - "net.axay:kspigot:1.17.2"
+  - "com.onarandombox.multiversecore:Multiverse-Core:4.2.2"
+  - "de.dytanic.cloudnet:cloudnet-bridge:3.4.0-RELEASE"
 commands:
   knockout:
     description: Information

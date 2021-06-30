@@ -52,7 +52,7 @@ class Holo(private val location: Location, text: List<String>, private val small
     }
 
     fun setLine(index: Int, text: String) {
-        if(index>armorstands.size) {
+        if (index > armorstands.size) {
             println("You want to set a Line that doesn't exist.")
             return
         }
